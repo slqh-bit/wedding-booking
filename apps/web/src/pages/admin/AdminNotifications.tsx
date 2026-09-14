@@ -14,6 +14,7 @@ const channelIcon: Record<NotificationDTO['channel'], string> = {
   EMAIL: '📧',
   SMS: '💬',
   WHATSAPP: '🟢',
+  TELEGRAM: '✈️',
 };
 
 export function AdminNotifications() {

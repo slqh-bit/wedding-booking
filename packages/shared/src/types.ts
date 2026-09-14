@@ -90,7 +90,7 @@ export interface BookingDTO {
 export interface NotificationDTO {
   id: string;
   type: 'BOOKING_RECEIVED' | 'PAYMENT_CONFIRMED';
-  channel: 'EMAIL' | 'SMS' | 'WHATSAPP';
+  channel: 'EMAIL' | 'SMS' | 'WHATSAPP' | 'TELEGRAM';
   status: 'PENDING' | 'SENT' | 'FAILED';
   locale: string;
   to: string;

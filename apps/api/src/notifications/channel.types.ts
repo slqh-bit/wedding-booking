@@ -10,9 +10,9 @@ export interface SendResult {
   error?: string;
 }
 
-/** A delivery channel (email now; SMS/WhatsApp adapters can implement this later). */
+/** A delivery channel (email, SMS, WhatsApp, Telegram). */
 export interface NotificationChannelImpl {
-  readonly channel: 'EMAIL' | 'SMS' | 'WHATSAPP';
+  readonly channel: 'EMAIL' | 'SMS' | 'WHATSAPP' | 'TELEGRAM';
   readonly name: string;
   send(msg: OutboundMessage): Promise<SendResult>;
 }

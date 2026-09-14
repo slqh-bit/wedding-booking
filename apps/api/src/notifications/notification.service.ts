@@ -9,8 +9,8 @@ import {
 import { prisma } from '../db.js';
 import { fiscalConfig } from '../env.js';
 import { logger } from '../logger.js';
-import { getEmailChannel } from './channel.factory.js';
-import { renderTemplate } from './templates.js';
+import { getActiveChannels, recipientFor } from './channel.factory.js';
+import { renderShort, renderTemplate } from './templates.js';
 
 /**
  * Send a notification for a booking event. Best-effort: never throws to the
@@ -31,7 +31,7 @@ async function notify(type: NotificationType, bookingId: string): Promise<void> 
       fiscalConfig,
     );
 
-    const { subject, body } = renderTemplate(type, locale, {
+    const ctx = {
       customerName: booking.user.fullName,
       reference: booking.reference,
       eventType: booking.eventType,
@@ -39,41 +39,46 @@ async function notify(type: NotificationType, bookingId: string): Promise<void> 
       total: fiscal.total,
       deposit: fiscal.deposit,
       invoiceNumber: booking.invoice?.number,
-    });
+    };
+    const email = renderTemplate(type, locale, ctx);
+    const shortText = renderShort(type, locale, ctx);
 
-    const channel = getEmailChannel();
+    // Fan out across every enabled channel the user is reachable on. Each is
+    // deduped independently by the unique (bookingId, type, channel) constraint.
+    for (const channel of getActiveChannels()) {
+      const to = recipientFor(channel.channel, booking.user);
+      if (!to) continue;
+      const body = channel.channel === 'EMAIL' ? email.body : shortText;
 
-    // Claim the (booking, type) slot first — a unique conflict means it was
-    // already sent/queued, so we skip silently (idempotent).
-    let record;
-    try {
-      record = await prisma.notification.create({
-        data: {
-          userId: booking.userId,
-          bookingId: booking.id,
-          channel: 'EMAIL',
-          type,
-          locale,
-          to: booking.user.email,
-          subject,
-          body,
-          status: 'PENDING',
-        },
-      });
-    } catch (err) {
-      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
-        return; // already notified for this booking + type
+      let record;
+      try {
+        record = await prisma.notification.create({
+          data: {
+            userId: booking.userId,
+            bookingId: booking.id,
+            channel: channel.channel,
+            type,
+            locale,
+            to,
+            subject: email.subject,
+            body,
+            status: 'PENDING',
+          },
+        });
+      } catch (err) {
+        // Unique conflict → already sent/queued on this channel; skip silently.
+        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') continue;
+        throw err;
       }
-      throw err;
-    }
 
-    const result = await channel.send({ to: booking.user.email, subject, body });
-    await prisma.notification.update({
-      where: { id: record.id },
-      data: result.ok
-        ? { status: 'SENT', sentAt: new Date() }
-        : { status: 'FAILED', error: result.error ?? 'unknown' },
-    });
+      const result = await channel.send({ to, subject: email.subject, body });
+      await prisma.notification.update({
+        where: { id: record.id },
+        data: result.ok
+          ? { status: 'SENT', sentAt: new Date() }
+          : { status: 'FAILED', error: result.error ?? 'unknown' },
+      });
+    }
   } catch (err) {
     logger.error({ err, bookingId, type }, 'Notification failed');
   }

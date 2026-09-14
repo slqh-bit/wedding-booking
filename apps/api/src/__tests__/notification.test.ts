@@ -9,6 +9,10 @@ import { createApp } from '../app.js';
 import { prisma } from '../db.js';
 import { renderTemplate } from '../notifications/templates.js';
 
+// This suite asserts on the single default channel; pin it so a parallel
+// multi-channel suite can't leak NOTIFY_CHANNELS into this run.
+process.env.NOTIFY_CHANNELS = 'email';
+
 const app = createApp();
 const unique = Date.now();
 const customer = {

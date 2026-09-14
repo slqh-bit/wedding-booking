@@ -150,3 +150,27 @@ export function renderTemplate(
     ].join('\n'),
   };
 }
+
+/** Compact one-message body for SMS / WhatsApp / Telegram. */
+export function renderShort(
+  type: NotificationType,
+  locale: Locale,
+  ctx: TemplateContext,
+): string {
+  const money = (n: number) => formatTND(n, locale);
+  const evt = eventLabel(locale, ctx.eventType);
+
+  if (type === 'BOOKING_RECEIVED') {
+    if (locale === 'fr')
+      return `Hafalati : demande ${ctx.reference} (${evt}, ${ctx.eventDate}) reçue. Acompte ${money(ctx.deposit)} à régler pour confirmer.`;
+    if (locale === 'en')
+      return `Hafalati: request ${ctx.reference} (${evt}, ${ctx.eventDate}) received. Pay the ${money(ctx.deposit)} deposit to confirm.`;
+    return `حفلاتي: استلمنا طلب حجزك ${ctx.reference} (${evt}، ${ctx.eventDate}). ادفع العربون ${money(ctx.deposit)} لتأكيد الحجز.`;
+  }
+
+  if (locale === 'fr')
+    return `Hafalati : réservation ${ctx.reference} confirmée ✅ (acompte ${money(ctx.deposit)} reçu). À bientôt !`;
+  if (locale === 'en')
+    return `Hafalati: booking ${ctx.reference} confirmed ✅ (${money(ctx.deposit)} deposit received). See you soon!`;
+  return `حفلاتي: تم تأكيد حجزك ${ctx.reference} ✅ (استلمنا عربون ${money(ctx.deposit)}). في انتظارك!`;
+}

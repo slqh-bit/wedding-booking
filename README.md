@@ -136,19 +136,29 @@ sandbox checkout → success. Bank transfer remains a fallback.
 
 ## Notifications (Phase 2)
 
-Customers get an email when a booking is **received** (PENDING) and again when the deposit is
-**confirmed** (CONFIRMED), in their own locale (AR/FR/EN). Same credential-optional shape as payments:
+Customers are notified when a booking is **received** (PENDING) and again when the deposit is
+**confirmed** (CONFIRMED), in their own locale (AR/FR/EN), across multiple channels.
 
-- **`console`** (default) — logs the message instead of sending, so it works with no SMTP.
-- **`smtp`** — real delivery via nodemailer. Set `NOTIFY_PROVIDER=smtp` + the `SMTP_*` keys.
+**Channels** — set `NOTIFY_CHANNELS` (csv) to any of `email,sms,whatsapp,telegram`. Each channel sends
+via its real provider when configured, and otherwise **logs to the console**, so every channel works in
+dev with zero credentials:
 
-The channel interface is ready for **SMS / WhatsApp** adapters. Sends are best-effort (a mail failure
-never breaks a booking) and deduped by a unique `(bookingId, type)` constraint, so a retried webhook
-can't re-send. Admins see every message under **Admin → Notifications**.
+| Channel | Real provider | Recipient |
+|---|---|---|
+| `email` | SMTP (nodemailer), `NOTIFY_PROVIDER=smtp` | `user.email` |
+| `sms` | Twilio (`TWILIO_*`) | `user.phone` |
+| `whatsapp` | Twilio WhatsApp (`TWILIO_WHATSAPP_FROM`) | `user.phone` |
+| `telegram` | Telegram Bot (`TELEGRAM_BOT_TOKEN`) | `user.telegramChatId` (or `TELEGRAM_OPS_CHAT_ID`) |
+
+Email gets the full message; SMS/WhatsApp/Telegram get a compact one-liner. Sends are best-effort (a
+delivery failure never breaks a booking) and deduped per channel by a unique `(bookingId, type, channel)`
+constraint, so a retried webhook can't re-send. Admins see every message + status under
+**Admin → Notifications**.
 
 ## Roadmap
 
-- **Phase 2 (in progress)** — ✅ online payment gateway (Konnect + mock), ✅ email notifications
-  (console + SMTP). Next: Flouci / D17 adapters, SMS / WhatsApp channels, invoice PDF export.
+- **Phase 2 (in progress)** — ✅ online payment gateway (Konnect + mock), ✅ notifications across
+  email / SMS / WhatsApp / Telegram (console + real providers). Next: Flouci / D17 adapters,
+  customer Telegram-linking UI, invoice PDF export.
 - **Phase 3** — vendor onboarding + per-vendor dashboards, commissions/payouts, reviews, search,
   promo packages ("الباقات").

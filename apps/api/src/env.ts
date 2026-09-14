@@ -42,6 +42,18 @@ const envSchema = z.object({
   SMTP_SECURE: z.coerce.boolean().default(false),
   SMTP_USER: z.string().default(''),
   SMTP_PASS: z.string().default(''),
+
+  // Which channels a customer notification fans out to (csv). A channel with no
+  // credentials logs to the console instead of sending, so this works in dev.
+  NOTIFY_CHANNELS: z.string().default('email'),
+  // Twilio (SMS + WhatsApp)
+  TWILIO_ACCOUNT_SID: z.string().default(''),
+  TWILIO_AUTH_TOKEN: z.string().default(''),
+  TWILIO_SMS_FROM: z.string().default(''),
+  TWILIO_WHATSAPP_FROM: z.string().default(''),
+  // Telegram Bot API
+  TELEGRAM_BOT_TOKEN: z.string().default(''),
+  TELEGRAM_OPS_CHAT_ID: z.string().default(''),
 });
 
 // In test we don't require real secrets; provide safe fallbacks.

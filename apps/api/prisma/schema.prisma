@@ -75,6 +75,7 @@ enum NotificationChannel {
   EMAIL
   SMS
   WHATSAPP
+  TELEGRAM
 }
 
 enum NotificationType {
@@ -97,6 +98,9 @@ model User {
   fullName     String
   locale       String   @default("ar")
   role         UserRole @default(CUSTOMER)
+  /// Optional Telegram chat id for Telegram notifications (set when the user
+  /// links their Telegram; null = no Telegram delivery for this user).
+  telegramChatId String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -255,7 +259,7 @@ model Notification {
   user    User     @relation(fields: [userId], references: [id])
   booking Booking? @relation(fields: [bookingId], references: [id], onDelete: Cascade)
 
-  @@unique([bookingId, type])
+  @@unique([bookingId, type, channel])
   @@index([userId])
   @@index([status])
 }

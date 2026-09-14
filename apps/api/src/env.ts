@@ -28,11 +28,22 @@ const envSchema = z.object({
   PUBLIC_API_URL: z.string().default('http://localhost:4000'),
 
   // Payment gateway (Phase 2). `mock` needs no credentials and drives dev/tests.
-  PAYMENT_PROVIDER: z.enum(['mock', 'konnect']).default('mock'),
+  PAYMENT_PROVIDER: z.enum(['mock', 'konnect', 'flouci', 'd17']).default('mock'),
   KONNECT_API_KEY: z.string().default(''),
   KONNECT_WALLET_ID: z.string().default(''),
   KONNECT_BASE_URL: z.string().default('https://api.konnect.network/api/v2'),
   KONNECT_WEBHOOK_SECRET: z.string().default(''),
+
+  // Flouci (https://developers.flouci.com)
+  FLOUCI_APP_TOKEN: z.string().default(''),
+  FLOUCI_APP_SECRET: z.string().default(''),
+  FLOUCI_BASE_URL: z.string().default('https://developers.flouci.com'),
+
+  // D17 (La Poste Tunisienne e-wallet). Endpoint/field names are configurable
+  // and must be confirmed against D17's merchant docs before go-live.
+  D17_API_KEY: z.string().default(''),
+  D17_MERCHANT_ID: z.string().default(''),
+  D17_BASE_URL: z.string().default(''),
 
   // Notifications (Phase 2). `console` logs instead of sending (dev/test default).
   NOTIFY_PROVIDER: z.enum(['console', 'smtp']).default('console'),

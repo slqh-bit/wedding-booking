@@ -7,7 +7,7 @@ import type {
   NotificationDTO,
   OfferingDTO,
 } from '@hafalati/shared';
-import { api } from './api.js';
+import { api, downloadFile } from './api.js';
 
 export interface PlatformInfo {
   name: string;
@@ -33,6 +33,8 @@ export const endpoints = {
   confirmBooking: (id: string) => api.post<BookingDTO>(`/bookings/${id}/confirm`, undefined, true),
   cancelBooking: (id: string) => api.post<BookingDTO>(`/bookings/${id}/cancel`, undefined, true),
   myBookings: () => api.get<{ data: BookingDTO[] }>('/bookings', true).then((r) => r.data),
+  downloadInvoice: (bookingId: string, ref: string) =>
+    downloadFile(`/bookings/${bookingId}/invoice`, `facture-${ref}.pdf`),
 
   // Payments (Phase 2 gateway)
   payDeposit: (bookingId: string) =>

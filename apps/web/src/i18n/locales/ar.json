@@ -66,7 +66,8 @@
     "empty": "لا توجد حجوزات بعد.",
     "startPlanning": "ابدأ التخطيط",
     "cancel": "إلغاء الحجز",
-    "cancelConfirm": "هل أنت متأكد من إلغاء هذا الحجز؟"
+    "cancelConfirm": "هل أنت متأكد من إلغاء هذا الحجز؟",
+    "downloadInvoice": "تحميل الفاتورة (PDF)"
   },
   "status": {
     "DRAFT": "مسودّة",

@@ -66,7 +66,8 @@
     "empty": "Aucune réservation pour l’instant.",
     "startPlanning": "Commencer",
     "cancel": "Annuler",
-    "cancelConfirm": "Confirmer l’annulation de cette réservation ?"
+    "cancelConfirm": "Confirmer l’annulation de cette réservation ?",
+    "downloadInvoice": "Télécharger la facture (PDF)"
   },
   "status": {
     "DRAFT": "Brouillon",

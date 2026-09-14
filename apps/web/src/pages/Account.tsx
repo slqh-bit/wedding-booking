@@ -68,6 +68,15 @@ function BookingCard({ booking }: { booking: BookingDTO }) {
 
   const canCancel = booking.status === 'PENDING' || booking.status === 'DRAFT';
   const canPay = booking.status === 'PENDING' && booking.depositStatus !== 'PAID';
+  const hasInvoice = booking.status === 'CONFIRMED' || booking.status === 'COMPLETED';
+
+  async function downloadInvoice() {
+    try {
+      await endpoints.downloadInvoice(booking.id, booking.reference);
+    } catch {
+      toast.error(t('common.error'));
+    }
+  }
 
   async function payOnline() {
     setPaying(true);
@@ -108,8 +117,13 @@ function BookingCard({ booking }: { booking: BookingDTO }) {
         ))}
       </div>
 
-      {(canCancel || canPay) && (
+      {(canCancel || canPay || hasInvoice) && (
         <div className="mt-4 flex justify-end gap-2">
+          {hasInvoice && (
+            <GoldButton variant="outline" size="sm" onClick={downloadInvoice}>
+              📄 {t('account.downloadInvoice')}
+            </GoldButton>
+          )}
           {canCancel && (
             <GoldButton
               variant="ghost"

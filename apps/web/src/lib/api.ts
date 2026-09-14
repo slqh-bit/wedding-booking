@@ -114,6 +114,28 @@ async function tryRefresh(): Promise<boolean> {
   return refreshInFlight;
 }
 
+/** Fetch an authenticated binary response and trigger a browser download. */
+export async function downloadFile(path: string, filename: string): Promise<void> {
+  let res = await fetch(`${BASE_URL}${path}`, {
+    headers: tokenStore.access ? { Authorization: `Bearer ${tokenStore.access}` } : {},
+  });
+  if (res.status === 401 && (await tryRefresh())) {
+    res = await fetch(`${BASE_URL}${path}`, {
+      headers: tokenStore.access ? { Authorization: `Bearer ${tokenStore.access}` } : {},
+    });
+  }
+  if (!res.ok) throw new ApiRequestError(res.status, 'download_failed', 'Download failed');
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
 export const api = {
   get: <T>(path: string, auth = false) => rawRequest<T>(path, { method: 'GET', auth }),
   post: <T>(path: string, body?: unknown, auth = false) =>

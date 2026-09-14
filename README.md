@@ -123,8 +123,13 @@ Customers can pay the deposit online. A `PaymentGateway` abstraction
 
 - **`mock`** (default) — an in-app sandbox checkout (`/payment/mock/:ref`) that drives the same
   webhook path, so the whole flow is demoable locally with **no credentials**.
-- **`konnect`** — the Tunisian [Konnect](https://konnect.network) gateway (hosted checkout +
-  webhook). Set `PAYMENT_PROVIDER=konnect` and fill `KONNECT_API_KEY` / `KONNECT_WALLET_ID`.
+- **`konnect`** — the Tunisian [Konnect](https://konnect.network) gateway (hosted checkout + webhook).
+- **`flouci`** — [Flouci](https://developers.flouci.com) (`generate_payment` + `verify_payment`).
+- **`d17`** — D17 / La Poste Tunisienne (adapter scaffold; confirm endpoint/field names against D17's
+  merchant docs before go-live).
+
+Set `PAYMENT_PROVIDER` to the one you want and fill that provider's keys. All four implement the same
+`PaymentGateway` interface, so nothing else changes.
 
 Flow: `POST /bookings/:id/pay` → hosted checkout → gateway webhook
 (`POST /payments/webhook/:provider`, signature-verified, idempotent) → `settlePayment()` marks the
@@ -162,8 +167,7 @@ a configured bot, a dev **"simulate link"** button drives the same path so the f
 
 ## Roadmap
 
-- **Phase 2 (in progress)** — ✅ online payment gateway (Konnect + mock), ✅ notifications across
-  email / SMS / WhatsApp / Telegram (console + real providers), ✅ customer Telegram-linking flow.
-  Next: Flouci / D17 adapters, invoice PDF export.
+- **Phase 2** — ✅ online payment gateways (mock / Konnect / Flouci / D17), ✅ notifications across
+  email / SMS / WhatsApp / Telegram, ✅ customer Telegram-linking, ✅ invoice PDF export.
 - **Phase 3** — vendor onboarding + per-vendor dashboards, commissions/payouts, reviews, search,
   promo packages ("الباقات").

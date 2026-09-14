@@ -103,6 +103,24 @@
     "markCompleted": "Mark completed",
     "comingSoon": "Coming soon"
   },
+  "payment": {
+    "payOnline": "Pay deposit online",
+    "payByTransfer": "Pay by bank transfer",
+    "or": "or",
+    "redirecting": "Redirecting to payment…",
+    "processing": "Confirming your payment…",
+    "successTitle": "Payment successful!",
+    "successSub": "Your booking is confirmed. Thank you for choosing Hafalati.",
+    "failedTitle": "Payment not completed",
+    "failedSub": "No amount was charged. You can try again.",
+    "retry": "Try again",
+    "viewBooking": "View booking",
+    "mockTitle": "Sandbox payment gateway",
+    "mockSub": "This is a simulated payment page (development mode).",
+    "paySuccess": "Simulate successful payment",
+    "payFail": "Simulate failed payment",
+    "amount": "Amount"
+  },
   "common": {
     "loading": "Loading…",
     "error": "Something went wrong",

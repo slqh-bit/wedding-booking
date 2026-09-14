@@ -190,8 +190,8 @@ model BookingItem {
   @@index([bookingId])
 }
 
-/// Payment records exist now (bank-transfer / cash, admin-confirmed).
-/// The GATEWAY method + online flow is wired in Phase 2.
+/// Payment records: bank-transfer / cash (admin-confirmed) or an online GATEWAY
+/// payment (Phase 2). Gateway fields are null for offline payments.
 model Payment {
   id                String        @id @default(cuid())
   bookingId         String
@@ -200,6 +200,11 @@ model Payment {
   status            PaymentStatus @default(PENDING)
   reference         String?
   confirmedByAdminId String?
+  /// Gateway integration (Phase 2): which provider, its payment reference, and
+  /// the hosted checkout URL the customer was sent to.
+  provider          String?
+  providerRef       String?       @unique
+  checkoutUrl       String?
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
 

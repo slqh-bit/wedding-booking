@@ -1,15 +1,14 @@
 import { Prisma } from '@prisma/client';
 import {
-  computeTotals,
   type BookingStatus,
   type OfferingInput,
   type RecordPaymentInput,
   type ServiceCategory,
 } from '@hafalati/shared';
 import { prisma } from '../db.js';
-import { fiscalConfig } from '../env.js';
 import { AppError } from '../http/errors.js';
 import { toBookingDTO, toOfferingDTO } from '../http/serialize.js';
+import { settlePayment } from '../payments/payment.service.js';
 
 // ── Offerings CRUD ──────────────────────────────────────
 async function platformVendorId(): Promise<string> {
@@ -124,53 +123,12 @@ export async function recordPayment(bookingId: string, input: RecordPaymentInput
   return getBookingWithPayments(bookingId);
 }
 
-/** Confirm a pending payment → mark PAID, confirm booking, issue invoice. */
+/**
+ * Confirm a pending payment (admin manual action). Delegates to the shared
+ * `settlePayment` so the offline and gateway paths issue invoices identically.
+ */
 export async function confirmPayment(paymentId: string, adminId: string) {
-  const payment = await prisma.payment.findUnique({
-    where: { id: paymentId },
-    include: { booking: { include: bookingInclude } },
-  });
-  if (!payment) throw AppError.notFound('payment_not_found', 'Payment not found');
-  if (payment.status === 'CONFIRMED') {
-    throw AppError.conflict('already_confirmed', 'Payment already confirmed');
-  }
-
-  const booking = payment.booking;
-
-  await prisma.$transaction(async (tx) => {
-    await tx.payment.update({
-      where: { id: paymentId },
-      data: { status: 'CONFIRMED', confirmedByAdminId: adminId },
-    });
-
-    await tx.booking.update({
-      where: { id: booking.id },
-      data: { status: 'CONFIRMED', depositStatus: 'PAID' },
-    });
-
-    const existingInvoice = await tx.invoice.findUnique({ where: { bookingId: booking.id } });
-    if (!existingInvoice) {
-      const fiscal = computeTotals(
-        booking.items.map((i) => ({ unitPrice: Number(i.unitPrice) })),
-        fiscalConfig,
-      );
-      const year = new Date().getUTCFullYear();
-      const count = await tx.invoice.count();
-      const number = `INV-${year}-${String(count + 1).padStart(4, '0')}`;
-      await tx.invoice.create({
-        data: {
-          bookingId: booking.id,
-          number,
-          subtotal: new Prisma.Decimal(fiscal.subtotal),
-          tva: new Prisma.Decimal(fiscal.tva),
-          timbreFiscal: new Prisma.Decimal(fiscal.timbreFiscal),
-          total: new Prisma.Decimal(fiscal.total),
-        },
-      });
-    }
-  });
-
-  return getBookingWithPayments(booking.id);
+  return settlePayment(paymentId, { adminId });
 }
 
 async function getBookingWithPayments(bookingId: string) {

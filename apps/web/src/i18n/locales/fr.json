@@ -103,6 +103,24 @@
     "markCompleted": "Marquer terminé",
     "comingSoon": "Bientôt"
   },
+  "payment": {
+    "payOnline": "Payer l’acompte en ligne",
+    "payByTransfer": "Payer par virement bancaire",
+    "or": "ou",
+    "redirecting": "Redirection vers le paiement…",
+    "processing": "Confirmation du paiement…",
+    "successTitle": "Paiement réussi !",
+    "successSub": "Votre réservation est confirmée. Merci pour votre confiance.",
+    "failedTitle": "Paiement non abouti",
+    "failedSub": "Aucun montant n’a été débité. Vous pouvez réessayer.",
+    "retry": "Réessayer",
+    "viewBooking": "Voir la réservation",
+    "mockTitle": "Passerelle de paiement (démo)",
+    "mockSub": "Page de simulation de paiement (mode développement).",
+    "paySuccess": "Simuler un paiement réussi",
+    "payFail": "Simuler un échec",
+    "amount": "Montant"
+  },
   "common": {
     "loading": "Chargement…",
     "error": "Une erreur est survenue",

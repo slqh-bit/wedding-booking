@@ -22,6 +22,17 @@ const envSchema = z.object({
   PLATFORM_EMAIL: z.string().default(''),
   PLATFORM_ADDRESS: z.string().default(''),
   BANK_TRANSFER_DETAILS: z.string().default(''),
+
+  // Public base URLs used to build gateway return + webhook links.
+  PUBLIC_WEB_URL: z.string().default('http://localhost:5173'),
+  PUBLIC_API_URL: z.string().default('http://localhost:4000'),
+
+  // Payment gateway (Phase 2). `mock` needs no credentials and drives dev/tests.
+  PAYMENT_PROVIDER: z.enum(['mock', 'konnect']).default('mock'),
+  KONNECT_API_KEY: z.string().default(''),
+  KONNECT_WALLET_ID: z.string().default(''),
+  KONNECT_BASE_URL: z.string().default('https://api.konnect.network/api/v2'),
+  KONNECT_WEBHOOK_SECRET: z.string().default(''),
 });
 
 // In test we don't require real secrets; provide safe fallbacks.

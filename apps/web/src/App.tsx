@@ -8,6 +8,8 @@ import { Account } from './pages/Account';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
+import { PaymentReturn } from './pages/payment/PaymentReturn';
+import { MockCheckout } from './pages/payment/MockCheckout';
 
 export function App() {
   return (
@@ -16,6 +18,8 @@ export function App() {
         <Route index element={<Home />} />
         <Route path="plan" element={<Planner />} />
         <Route path="confirmation" element={<Confirmation />} />
+        <Route path="payment/return" element={<PaymentReturn />} />
+        <Route path="payment/mock/:ref" element={<MockCheckout />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
         <Route

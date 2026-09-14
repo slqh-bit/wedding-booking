@@ -33,6 +33,17 @@ export const endpoints = {
   cancelBooking: (id: string) => api.post<BookingDTO>(`/bookings/${id}/cancel`, undefined, true),
   myBookings: () => api.get<{ data: BookingDTO[] }>('/bookings', true).then((r) => r.data),
 
+  // Payments (Phase 2 gateway)
+  payDeposit: (bookingId: string) =>
+    api.post<{ paymentId: string; checkoutUrl: string }>(`/bookings/${bookingId}/pay`, undefined, true),
+  paymentStatus: (paymentId: string) =>
+    api.get<{ status: string; bookingStatus: string; reference: string }>(
+      `/payments/${paymentId}/status`,
+      true,
+    ),
+  mockComplete: (providerRef: string, status: 'CONFIRMED' | 'FAILED') =>
+    api.post<{ ok: boolean; outcome: string }>(`/payments/mock/${providerRef}/complete`, { status }),
+
   // Admin
   adminStats: () => api.get<AdminStats>('/admin/stats', true),
   adminBookings: (status?: string) =>

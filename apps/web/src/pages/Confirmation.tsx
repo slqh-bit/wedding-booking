@@ -1,11 +1,13 @@
+import { useState } from 'react';
 import { Link, Navigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { BookingDTO, Locale } from '@hafalati/shared';
-import type { PlatformInfo } from '@/lib/queries';
+import { endpoints, type PlatformInfo } from '@/lib/queries';
 import { money } from '@/lib/format';
 import { GoldButton } from '@/design/GoldButton';
 import { Confetti } from '@/design/Confetti';
 import { OrnamentDivider } from '@/design/Ornament';
+import { useToast } from '@/design/Toast';
 
 interface ConfirmationState {
   booking?: BookingDTO;
@@ -16,10 +18,24 @@ export function Confirmation() {
   const { t, i18n } = useTranslation();
   const locale = i18n.language as Locale;
   const location = useLocation();
+  const toast = useToast();
+  const [paying, setPaying] = useState(false);
   const state = (location.state ?? {}) as ConfirmationState;
   const booking = state.booking;
 
   if (!booking) return <Navigate to="/" replace />;
+
+  async function payOnline() {
+    if (!booking) return;
+    setPaying(true);
+    try {
+      const { checkoutUrl } = await endpoints.payDeposit(booking.id);
+      window.location.assign(checkoutUrl);
+    } catch {
+      toast.error(t('common.error'));
+      setPaying(false);
+    }
+  }
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-14 text-center sm:px-6">
@@ -46,12 +62,25 @@ export function Confirmation() {
             {money(booking.fiscal.deposit, locale)}
           </span>
         </div>
-        {state.platform?.bankTransferDetails && (
-          <div className="mt-4 rounded-2xl border border-dashed border-gold-300 bg-white p-4">
-            <p className="text-xs font-semibold text-blush-700">{t('confirmation.depositNote')}</p>
-            <p className="mt-1 font-mono text-sm text-blush-900" dir="ltr">
-              {state.platform.bankTransferDetails}
-            </p>
+
+        {booking.depositStatus !== 'PAID' && (
+          <div className="mt-4">
+            <GoldButton size="lg" className="w-full" loading={paying} onClick={payOnline}>
+              💳 {t('payment.payOnline')}
+            </GoldButton>
+            {state.platform?.bankTransferDetails && (
+              <>
+                <div className="my-3 text-center text-xs text-blush-400">— {t('payment.or')} —</div>
+                <div className="rounded-2xl border border-dashed border-gold-300 bg-white p-4">
+                  <p className="text-xs font-semibold text-blush-700">
+                    {t('confirmation.depositNote')}
+                  </p>
+                  <p className="mt-1 font-mono text-sm text-blush-900" dir="ltr">
+                    {state.platform.bankTransferDetails}
+                  </p>
+                </div>
+              </>
+            )}
           </div>
         )}
       </div>

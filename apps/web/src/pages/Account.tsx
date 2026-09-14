@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -49,6 +50,8 @@ function BookingCard({ booking }: { booking: BookingDTO }) {
   const qc = useQueryClient();
   const toast = useToast();
 
+  const [paying, setPaying] = useState(false);
+
   const cancel = useMutation({
     mutationFn: () => endpoints.cancelBooking(booking.id),
     onSuccess: () => {
@@ -59,6 +62,18 @@ function BookingCard({ booking }: { booking: BookingDTO }) {
   });
 
   const canCancel = booking.status === 'PENDING' || booking.status === 'DRAFT';
+  const canPay = booking.status === 'PENDING' && booking.depositStatus !== 'PAID';
+
+  async function payOnline() {
+    setPaying(true);
+    try {
+      const { checkoutUrl } = await endpoints.payDeposit(booking.id);
+      window.location.assign(checkoutUrl);
+    } catch {
+      toast.error(t('common.error'));
+      setPaying(false);
+    }
+  }
 
   return (
     <div className="surface p-5">
@@ -88,18 +103,25 @@ function BookingCard({ booking }: { booking: BookingDTO }) {
         ))}
       </div>
 
-      {canCancel && (
-        <div className="mt-4 flex justify-end">
-          <GoldButton
-            variant="ghost"
-            size="sm"
-            loading={cancel.isPending}
-            onClick={() => {
-              if (confirm(t('account.cancelConfirm'))) cancel.mutate();
-            }}
-          >
-            {t('account.cancel')}
-          </GoldButton>
+      {(canCancel || canPay) && (
+        <div className="mt-4 flex justify-end gap-2">
+          {canCancel && (
+            <GoldButton
+              variant="ghost"
+              size="sm"
+              loading={cancel.isPending}
+              onClick={() => {
+                if (confirm(t('account.cancelConfirm'))) cancel.mutate();
+              }}
+            >
+              {t('account.cancel')}
+            </GoldButton>
+          )}
+          {canPay && (
+            <GoldButton size="sm" loading={paying} onClick={payOnline}>
+              💳 {t('payment.payOnline')}
+            </GoldButton>
+          )}
         </div>
       )}
     </div>

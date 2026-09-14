@@ -116,9 +116,27 @@ pnpm test
 - Currency: **TND** with millime precision. Fiscal rules (rates, Timbre Fiscal, deposit) are
   configurable via `apps/api/.env` (`TVA_RATE`, `TIMBRE_FISCAL_TND`, `DEPOSIT_RATE`).
 
+## Online payments (Phase 2)
+
+Customers can pay the deposit online. A `PaymentGateway` abstraction
+(`apps/api/src/payments/`) has two implementations selected by `PAYMENT_PROVIDER`:
+
+- **`mock`** (default) — an in-app sandbox checkout (`/payment/mock/:ref`) that drives the same
+  webhook path, so the whole flow is demoable locally with **no credentials**.
+- **`konnect`** — the Tunisian [Konnect](https://konnect.network) gateway (hosted checkout +
+  webhook). Set `PAYMENT_PROVIDER=konnect` and fill `KONNECT_API_KEY` / `KONNECT_WALLET_ID`.
+
+Flow: `POST /bookings/:id/pay` → hosted checkout → gateway webhook
+(`POST /payments/webhook/:provider`, signature-verified, idempotent) → `settlePayment()` marks the
+booking **CONFIRMED**, deposit **PAID**, and issues the invoice — the exact same code path as an admin
+manual confirmation. The return page (`/payment/return`) polls `GET /payments/:id/status`.
+
+Try it locally: run the wizard → confirm a booking → **"ادفع العربون الآن / Pay deposit online"** →
+sandbox checkout → success. Bank transfer remains a fallback.
+
 ## Roadmap
 
-- **Phase 2** — Tunisian payment gateway (Flouci / Konnect / D17), email/SMS/WhatsApp notifications,
-  invoice PDF export.
+- **Phase 2 (in progress)** — ✅ online payment gateway (Konnect + mock). Next: Flouci / D17 adapters,
+  email/SMS/WhatsApp notifications, invoice PDF export.
 - **Phase 3** — vendor onboarding + per-vendor dashboards, commissions/payouts, reviews, search,
   promo packages ("الباقات").

@@ -66,7 +66,8 @@
     "empty": "لا توجد حجوزات بعد.",
     "startPlanning": "ابدأ التخطيط",
     "cancel": "إلغاء الحجز",
-    "cancelConfirm": "هل أنت متأكد من إلغاء هذا الحجز؟"
+    "cancelConfirm": "هل أنت متأكد من إلغاء هذا الحجز؟",
+    "downloadInvoice": "تحميل الفاتورة (PDF)"
   },
   "status": {
     "DRAFT": "مسودّة",
@@ -101,7 +102,42 @@
     "customers": "العملاء",
     "confirmPayment": "تأكيد الدفع",
     "markCompleted": "وضع كمكتمل",
-    "comingSoon": "قريباً"
+    "comingSoon": "قريباً",
+    "notifications": "الإشعارات",
+    "notifEmpty": "لا توجد إشعارات بعد.",
+    "notifType": { "BOOKING_RECEIVED": "استلام الحجز", "PAYMENT_CONFIRMED": "تأكيد الدفع" },
+    "notifStatus": { "SENT": "أُرسل", "PENDING": "قيد الإرسال", "FAILED": "فشل" }
+  },
+  "telegram": {
+    "title": "إشعارات تيليجرام",
+    "desc": "اربط حساب تيليجرام لتصلك تأكيدات الحجز والدفع فوراً.",
+    "linked": "مربوط ✓",
+    "notLinked": "غير مربوط",
+    "link": "ربط تيليجرام",
+    "unlink": "إلغاء الربط",
+    "openBot": "افتح البوت في تيليجرام",
+    "waiting": "في انتظار الربط…",
+    "simulate": "محاكاة الربط (وضع التطوير)",
+    "linkedToast": "تم ربط تيليجرام بنجاح",
+    "codeHint": "أرسل /start مع الرمز التالي إلى البوت:"
+  },
+  "payment": {
+    "payOnline": "ادفع العربون الآن",
+    "payByTransfer": "الدفع عبر التحويل البنكي",
+    "or": "أو",
+    "redirecting": "جارٍ تحويلك لبوابة الدفع…",
+    "processing": "جارٍ تأكيد الدفع…",
+    "successTitle": "تم الدفع بنجاح!",
+    "successSub": "تم تأكيد حجزك. شكراً لثقتك بحفلاتي.",
+    "failedTitle": "لم تكتمل عملية الدفع",
+    "failedSub": "لم يتم خصم أي مبلغ. يمكنك إعادة المحاولة.",
+    "retry": "إعادة المحاولة",
+    "viewBooking": "عرض الحجز",
+    "mockTitle": "بوابة دفع تجريبية",
+    "mockSub": "هذه صفحة محاكاة للدفع (وضع التطوير).",
+    "paySuccess": "محاكاة دفع ناجح",
+    "payFail": "محاكاة فشل الدفع",
+    "amount": "المبلغ"
   },
   "common": {
     "loading": "جارٍ التحميل…",

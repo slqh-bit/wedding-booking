@@ -66,7 +66,8 @@
     "empty": "Aucune réservation pour l’instant.",
     "startPlanning": "Commencer",
     "cancel": "Annuler",
-    "cancelConfirm": "Confirmer l’annulation de cette réservation ?"
+    "cancelConfirm": "Confirmer l’annulation de cette réservation ?",
+    "downloadInvoice": "Télécharger la facture (PDF)"
   },
   "status": {
     "DRAFT": "Brouillon",
@@ -101,7 +102,42 @@
     "customers": "Clients",
     "confirmPayment": "Confirmer le paiement",
     "markCompleted": "Marquer terminé",
-    "comingSoon": "Bientôt"
+    "comingSoon": "Bientôt",
+    "notifications": "Notifications",
+    "notifEmpty": "Aucune notification pour l’instant.",
+    "notifType": { "BOOKING_RECEIVED": "Réservation reçue", "PAYMENT_CONFIRMED": "Paiement confirmé" },
+    "notifStatus": { "SENT": "Envoyée", "PENDING": "En attente", "FAILED": "Échec" }
+  },
+  "telegram": {
+    "title": "Notifications Telegram",
+    "desc": "Liez votre Telegram pour recevoir instantanément les confirmations de réservation et de paiement.",
+    "linked": "Lié ✓",
+    "notLinked": "Non lié",
+    "link": "Lier Telegram",
+    "unlink": "Délier",
+    "openBot": "Ouvrir le bot dans Telegram",
+    "waiting": "En attente de la liaison…",
+    "simulate": "Simuler la liaison (dév)",
+    "linkedToast": "Telegram lié avec succès",
+    "codeHint": "Envoyez /start avec ce code au bot :"
+  },
+  "payment": {
+    "payOnline": "Payer l’acompte en ligne",
+    "payByTransfer": "Payer par virement bancaire",
+    "or": "ou",
+    "redirecting": "Redirection vers le paiement…",
+    "processing": "Confirmation du paiement…",
+    "successTitle": "Paiement réussi !",
+    "successSub": "Votre réservation est confirmée. Merci pour votre confiance.",
+    "failedTitle": "Paiement non abouti",
+    "failedSub": "Aucun montant n’a été débité. Vous pouvez réessayer.",
+    "retry": "Réessayer",
+    "viewBooking": "Voir la réservation",
+    "mockTitle": "Passerelle de paiement (démo)",
+    "mockSub": "Page de simulation de paiement (mode développement).",
+    "paySuccess": "Simuler un paiement réussi",
+    "payFail": "Simuler un échec",
+    "amount": "Montant"
   },
   "common": {
     "loading": "Chargement…",

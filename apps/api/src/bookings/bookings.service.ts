@@ -9,6 +9,7 @@ import { prisma } from '../db.js';
 import { fiscalConfig } from '../env.js';
 import { AppError } from '../http/errors.js';
 import { toBookingDTO } from '../http/serialize.js';
+import { notifyBookingReceived } from '../notifications/notification.service.js';
 
 const bookingInclude = {
   items: { include: { offering: { select: { emoji: true } } } },
@@ -155,6 +156,9 @@ export async function confirmBooking(userId: string, bookingId: string) {
       include: bookingInclude,
     });
   });
+
+  // Best-effort "booking received" email (never blocks/fails the confirmation).
+  await notifyBookingReceived(updated.id);
 
   return toBookingDTO(updated);
 }

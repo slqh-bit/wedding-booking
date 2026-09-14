@@ -4,9 +4,10 @@ import type {
   BookingDTO,
   CategoryDTO,
   CreateBookingInput,
+  NotificationDTO,
   OfferingDTO,
 } from '@hafalati/shared';
-import { api } from './api.js';
+import { api, downloadFile } from './api.js';
 
 export interface PlatformInfo {
   name: string;
@@ -32,6 +33,19 @@ export const endpoints = {
   confirmBooking: (id: string) => api.post<BookingDTO>(`/bookings/${id}/confirm`, undefined, true),
   cancelBooking: (id: string) => api.post<BookingDTO>(`/bookings/${id}/cancel`, undefined, true),
   myBookings: () => api.get<{ data: BookingDTO[] }>('/bookings', true).then((r) => r.data),
+  downloadInvoice: (bookingId: string, ref: string) =>
+    downloadFile(`/bookings/${bookingId}/invoice`, `facture-${ref}.pdf`),
+
+  // Payments (Phase 2 gateway)
+  payDeposit: (bookingId: string) =>
+    api.post<{ paymentId: string; checkoutUrl: string }>(`/bookings/${bookingId}/pay`, undefined, true),
+  paymentStatus: (paymentId: string) =>
+    api.get<{ status: string; bookingStatus: string; reference: string }>(
+      `/payments/${paymentId}/status`,
+      true,
+    ),
+  mockComplete: (providerRef: string, status: 'CONFIRMED' | 'FAILED') =>
+    api.post<{ ok: boolean; outcome: string }>(`/payments/mock/${providerRef}/complete`, { status }),
 
   // Admin
   adminStats: () => api.get<AdminStats>('/admin/stats', true),
@@ -40,6 +54,20 @@ export const endpoints = {
       .get<{ data: BookingDTO[] }>(`/admin/bookings${status ? `?status=${status}` : ''}`, true)
       .then((r) => r.data),
   adminOfferings: () => api.get<{ data: OfferingDTO[] }>('/admin/offerings', true).then((r) => r.data),
+  adminNotifications: () =>
+    api.get<{ data: NotificationDTO[] }>('/admin/notifications', true).then((r) => r.data),
+
+  // Telegram account linking
+  telegramStatus: () => api.get<{ linked: boolean }>('/notifications/telegram/status', true),
+  telegramLink: () =>
+    api.post<{ code: string; deepLink: string | null; botConfigured: boolean }>(
+      '/notifications/telegram/link',
+      undefined,
+      true,
+    ),
+  telegramUnlink: () => api.post<{ linked: boolean }>('/notifications/telegram/unlink', undefined, true),
+  telegramMockLink: (code: string) =>
+    api.post<{ linked: boolean }>('/notifications/telegram/mock-link', { code }),
   confirmPayment: (paymentId: string) =>
     api.post<BookingDTO>(`/admin/payments/${paymentId}/confirm`, undefined, true),
   setBookingStatus: (id: string, status: string) =>

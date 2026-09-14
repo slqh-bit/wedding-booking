@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -8,6 +9,7 @@ import { GoldButton } from '@/design/GoldButton';
 import { StatusBadge } from '@/design/StatusBadge';
 import { Skeleton } from '@/design/Skeleton';
 import { useToast } from '@/design/Toast';
+import { TelegramLink } from './account/TelegramLink';
 
 export function Account() {
   const { t } = useTranslation();
@@ -16,6 +18,10 @@ export function Account() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
       <h1 className="font-display text-3xl font-bold text-blush-900">{t('account.title')}</h1>
+
+      <div className="mt-6">
+        <TelegramLink />
+      </div>
 
       {isLoading && (
         <div className="mt-6 space-y-4">
@@ -49,6 +55,8 @@ function BookingCard({ booking }: { booking: BookingDTO }) {
   const qc = useQueryClient();
   const toast = useToast();
 
+  const [paying, setPaying] = useState(false);
+
   const cancel = useMutation({
     mutationFn: () => endpoints.cancelBooking(booking.id),
     onSuccess: () => {
@@ -59,6 +67,27 @@ function BookingCard({ booking }: { booking: BookingDTO }) {
   });
 
   const canCancel = booking.status === 'PENDING' || booking.status === 'DRAFT';
+  const canPay = booking.status === 'PENDING' && booking.depositStatus !== 'PAID';
+  const hasInvoice = booking.status === 'CONFIRMED' || booking.status === 'COMPLETED';
+
+  async function downloadInvoice() {
+    try {
+      await endpoints.downloadInvoice(booking.id, booking.reference);
+    } catch {
+      toast.error(t('common.error'));
+    }
+  }
+
+  async function payOnline() {
+    setPaying(true);
+    try {
+      const { checkoutUrl } = await endpoints.payDeposit(booking.id);
+      window.location.assign(checkoutUrl);
+    } catch {
+      toast.error(t('common.error'));
+      setPaying(false);
+    }
+  }
 
   return (
     <div className="surface p-5">
@@ -88,18 +117,30 @@ function BookingCard({ booking }: { booking: BookingDTO }) {
         ))}
       </div>
 
-      {canCancel && (
-        <div className="mt-4 flex justify-end">
-          <GoldButton
-            variant="ghost"
-            size="sm"
-            loading={cancel.isPending}
-            onClick={() => {
-              if (confirm(t('account.cancelConfirm'))) cancel.mutate();
-            }}
-          >
-            {t('account.cancel')}
-          </GoldButton>
+      {(canCancel || canPay || hasInvoice) && (
+        <div className="mt-4 flex justify-end gap-2">
+          {hasInvoice && (
+            <GoldButton variant="outline" size="sm" onClick={downloadInvoice}>
+              📄 {t('account.downloadInvoice')}
+            </GoldButton>
+          )}
+          {canCancel && (
+            <GoldButton
+              variant="ghost"
+              size="sm"
+              loading={cancel.isPending}
+              onClick={() => {
+                if (confirm(t('account.cancelConfirm'))) cancel.mutate();
+              }}
+            >
+              {t('account.cancel')}
+            </GoldButton>
+          )}
+          {canPay && (
+            <GoldButton size="sm" loading={paying} onClick={payOnline}>
+              💳 {t('payment.payOnline')}
+            </GoldButton>
+          )}
         </div>
       )}
     </div>

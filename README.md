@@ -116,9 +116,58 @@ pnpm test
 - Currency: **TND** with millime precision. Fiscal rules (rates, Timbre Fiscal, deposit) are
   configurable via `apps/api/.env` (`TVA_RATE`, `TIMBRE_FISCAL_TND`, `DEPOSIT_RATE`).
 
+## Online payments (Phase 2)
+
+Customers can pay the deposit online. A `PaymentGateway` abstraction
+(`apps/api/src/payments/`) has two implementations selected by `PAYMENT_PROVIDER`:
+
+- **`mock`** (default) — an in-app sandbox checkout (`/payment/mock/:ref`) that drives the same
+  webhook path, so the whole flow is demoable locally with **no credentials**.
+- **`konnect`** — the Tunisian [Konnect](https://konnect.network) gateway (hosted checkout + webhook).
+- **`flouci`** — [Flouci](https://developers.flouci.com) (`generate_payment` + `verify_payment`).
+- **`d17`** — D17 / La Poste Tunisienne (adapter scaffold; confirm endpoint/field names against D17's
+  merchant docs before go-live).
+
+Set `PAYMENT_PROVIDER` to the one you want and fill that provider's keys. All four implement the same
+`PaymentGateway` interface, so nothing else changes.
+
+Flow: `POST /bookings/:id/pay` → hosted checkout → gateway webhook
+(`POST /payments/webhook/:provider`, signature-verified, idempotent) → `settlePayment()` marks the
+booking **CONFIRMED**, deposit **PAID**, and issues the invoice — the exact same code path as an admin
+manual confirmation. The return page (`/payment/return`) polls `GET /payments/:id/status`.
+
+Try it locally: run the wizard → confirm a booking → **"ادفع العربون الآن / Pay deposit online"** →
+sandbox checkout → success. Bank transfer remains a fallback.
+
+## Notifications (Phase 2)
+
+Customers are notified when a booking is **received** (PENDING) and again when the deposit is
+**confirmed** (CONFIRMED), in their own locale (AR/FR/EN), across multiple channels.
+
+**Channels** — set `NOTIFY_CHANNELS` (csv) to any of `email,sms,whatsapp,telegram`. Each channel sends
+via its real provider when configured, and otherwise **logs to the console**, so every channel works in
+dev with zero credentials:
+
+| Channel | Real provider | Recipient |
+|---|---|---|
+| `email` | SMTP (nodemailer), `NOTIFY_PROVIDER=smtp` | `user.email` |
+| `sms` | Twilio (`TWILIO_*`) | `user.phone` |
+| `whatsapp` | Twilio WhatsApp (`TWILIO_WHATSAPP_FROM`) | `user.phone` |
+| `telegram` | Telegram Bot (`TELEGRAM_BOT_TOKEN`) | `user.telegramChatId` (or `TELEGRAM_OPS_CHAT_ID`) |
+
+Email gets the full message; SMS/WhatsApp/Telegram get a compact one-liner. Sends are best-effort (a
+delivery failure never breaks a booking) and deduped per channel by a unique `(bookingId, type, channel)`
+constraint, so a retried webhook can't re-send. Admins see every message + status under
+**Admin → Notifications**.
+
+**Telegram linking** — customers link their Telegram from **My account**: the app issues a one-time
+code and a bot deep link (`t.me/<bot>?start=<code>`); pressing Start makes the bot backend
+(`POST /notifications/telegram/webhook/<secret>`) capture the chat id and store it on the user. Without
+a configured bot, a dev **"simulate link"** button drives the same path so the flow is demoable locally.
+
 ## Roadmap
 
-- **Phase 2** — Tunisian payment gateway (Flouci / Konnect / D17), email/SMS/WhatsApp notifications,
-  invoice PDF export.
+- **Phase 2** — ✅ online payment gateways (mock / Konnect / Flouci / D17), ✅ notifications across
+  email / SMS / WhatsApp / Telegram, ✅ customer Telegram-linking, ✅ invoice PDF export.
 - **Phase 3** — vendor onboarding + per-vendor dashboards, commissions/payouts, reviews, search,
   promo packages ("الباقات").

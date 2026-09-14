@@ -66,7 +66,8 @@
     "empty": "No bookings yet.",
     "startPlanning": "Start planning",
     "cancel": "Cancel booking",
-    "cancelConfirm": "Cancel this booking?"
+    "cancelConfirm": "Cancel this booking?",
+    "downloadInvoice": "Download invoice (PDF)"
   },
   "status": {
     "DRAFT": "Draft",
@@ -101,7 +102,42 @@
     "customers": "Customers",
     "confirmPayment": "Confirm payment",
     "markCompleted": "Mark completed",
-    "comingSoon": "Coming soon"
+    "comingSoon": "Coming soon",
+    "notifications": "Notifications",
+    "notifEmpty": "No notifications yet.",
+    "notifType": { "BOOKING_RECEIVED": "Booking received", "PAYMENT_CONFIRMED": "Payment confirmed" },
+    "notifStatus": { "SENT": "Sent", "PENDING": "Pending", "FAILED": "Failed" }
+  },
+  "telegram": {
+    "title": "Telegram notifications",
+    "desc": "Link your Telegram to get booking and payment confirmations instantly.",
+    "linked": "Linked ✓",
+    "notLinked": "Not linked",
+    "link": "Link Telegram",
+    "unlink": "Unlink",
+    "openBot": "Open the bot in Telegram",
+    "waiting": "Waiting for link…",
+    "simulate": "Simulate link (dev)",
+    "linkedToast": "Telegram linked successfully",
+    "codeHint": "Send /start with this code to the bot:"
+  },
+  "payment": {
+    "payOnline": "Pay deposit online",
+    "payByTransfer": "Pay by bank transfer",
+    "or": "or",
+    "redirecting": "Redirecting to payment…",
+    "processing": "Confirming your payment…",
+    "successTitle": "Payment successful!",
+    "successSub": "Your booking is confirmed. Thank you for choosing Hafalati.",
+    "failedTitle": "Payment not completed",
+    "failedSub": "No amount was charged. You can try again.",
+    "retry": "Try again",
+    "viewBooking": "View booking",
+    "mockTitle": "Sandbox payment gateway",
+    "mockSub": "This is a simulated payment page (development mode).",
+    "paySuccess": "Simulate successful payment",
+    "payFail": "Simulate failed payment",
+    "amount": "Amount"
   },
   "common": {
     "loading": "Loading…",

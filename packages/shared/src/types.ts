@@ -87,6 +87,19 @@ export interface BookingDTO {
   payments: PaymentDTO[];
 }
 
+export interface NotificationDTO {
+  id: string;
+  type: 'BOOKING_RECEIVED' | 'PAYMENT_CONFIRMED';
+  channel: 'EMAIL' | 'SMS' | 'WHATSAPP' | 'TELEGRAM';
+  status: 'PENDING' | 'SENT' | 'FAILED';
+  locale: string;
+  to: string;
+  subject: string;
+  bookingRef: string | null;
+  createdAt: string;
+  sentAt: string | null;
+}
+
 export interface ApiError {
   error: {
     code: string;

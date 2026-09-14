@@ -8,6 +8,8 @@ import { errorHandler } from './http/errors.js';
 import { authRouter } from './auth/auth.routes.js';
 import { catalogRouter } from './catalog/catalog.routes.js';
 import { bookingsRouter } from './bookings/bookings.routes.js';
+import { paymentsRouter } from './payments/payments.routes.js';
+import { notificationsRouter } from './notifications/notifications.routes.js';
 import { adminRouter } from './admin/admin.routes.js';
 
 export function createApp(): Express {
@@ -46,6 +48,8 @@ export function createApp(): Express {
   app.use('/api/v1/auth', authRouter);
   app.use('/api/v1', catalogRouter);
   app.use('/api/v1/bookings', bookingsRouter);
+  app.use('/api/v1/payments', paymentsRouter);
+  app.use('/api/v1/notifications', notificationsRouter);
   app.use('/api/v1/admin', adminRouter);
 
   app.use((_req, res) => {

@@ -81,6 +81,14 @@ adminRouter.post(
   }),
 );
 
+// ── Notifications ───────────────────────────────────────
+adminRouter.get(
+  '/notifications',
+  asyncHandler(async (_req, res) => {
+    res.json({ data: await admin.listNotifications() });
+  }),
+);
+
 // ── Dashboard ───────────────────────────────────────────
 adminRouter.get(
   '/stats',

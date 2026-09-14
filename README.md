@@ -134,9 +134,21 @@ manual confirmation. The return page (`/payment/return`) polls `GET /payments/:i
 Try it locally: run the wizard → confirm a booking → **"ادفع العربون الآن / Pay deposit online"** →
 sandbox checkout → success. Bank transfer remains a fallback.
 
+## Notifications (Phase 2)
+
+Customers get an email when a booking is **received** (PENDING) and again when the deposit is
+**confirmed** (CONFIRMED), in their own locale (AR/FR/EN). Same credential-optional shape as payments:
+
+- **`console`** (default) — logs the message instead of sending, so it works with no SMTP.
+- **`smtp`** — real delivery via nodemailer. Set `NOTIFY_PROVIDER=smtp` + the `SMTP_*` keys.
+
+The channel interface is ready for **SMS / WhatsApp** adapters. Sends are best-effort (a mail failure
+never breaks a booking) and deduped by a unique `(bookingId, type)` constraint, so a retried webhook
+can't re-send. Admins see every message under **Admin → Notifications**.
+
 ## Roadmap
 
-- **Phase 2 (in progress)** — ✅ online payment gateway (Konnect + mock). Next: Flouci / D17 adapters,
-  email/SMS/WhatsApp notifications, invoice PDF export.
+- **Phase 2 (in progress)** — ✅ online payment gateway (Konnect + mock), ✅ email notifications
+  (console + SMTP). Next: Flouci / D17 adapters, SMS / WhatsApp channels, invoice PDF export.
 - **Phase 3** — vendor onboarding + per-vendor dashboards, commissions/payouts, reviews, search,
   promo packages ("الباقات").

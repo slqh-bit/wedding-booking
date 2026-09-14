@@ -4,6 +4,7 @@ import type {
   BookingDTO,
   CategoryDTO,
   CreateBookingInput,
+  NotificationDTO,
   OfferingDTO,
 } from '@hafalati/shared';
 import { api } from './api.js';
@@ -51,6 +52,8 @@ export const endpoints = {
       .get<{ data: BookingDTO[] }>(`/admin/bookings${status ? `?status=${status}` : ''}`, true)
       .then((r) => r.data),
   adminOfferings: () => api.get<{ data: OfferingDTO[] }>('/admin/offerings', true).then((r) => r.data),
+  adminNotifications: () =>
+    api.get<{ data: NotificationDTO[] }>('/admin/notifications', true).then((r) => r.data),
   confirmPayment: (paymentId: string) =>
     api.post<BookingDTO>(`/admin/payments/${paymentId}/confirm`, undefined, true),
   setBookingStatus: (id: string, status: string) =>

@@ -71,6 +71,23 @@ enum PaymentStatus {
   FAILED
 }
 
+enum NotificationChannel {
+  EMAIL
+  SMS
+  WHATSAPP
+}
+
+enum NotificationType {
+  BOOKING_RECEIVED
+  PAYMENT_CONFIRMED
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
 // ── Models ───────────────────────────────────────────────
 model User {
   id           String   @id @default(cuid())
@@ -83,9 +100,10 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  vendor            Vendor?   @relation("VendorOwner")
+  vendor            Vendor?        @relation("VendorOwner")
   bookings          Booking[]
-  confirmedPayments Payment[] @relation("PaymentConfirmedBy")
+  confirmedPayments Payment[]      @relation("PaymentConfirmedBy")
+  notifications     Notification[]
 
   @@index([role])
 }
@@ -165,10 +183,11 @@ model Booking {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
-  user     User          @relation(fields: [userId], references: [id])
-  items    BookingItem[]
-  payments Payment[]
-  invoice  Invoice?
+  user          User           @relation(fields: [userId], references: [id])
+  items         BookingItem[]
+  payments      Payment[]
+  invoice       Invoice?
+  notifications Notification[]
 
   @@index([userId])
   @@index([status])
@@ -212,6 +231,32 @@ model Payment {
   confirmedByAdmin User?   @relation("PaymentConfirmedBy", fields: [confirmedByAdminId], references: [id])
 
   @@index([bookingId])
+  @@index([status])
+}
+
+/// Outbound customer notification (email now; SMS/WhatsApp adapters later).
+/// One record per (booking, type) — the unique constraint dedupes retries so a
+/// re-delivered webhook never re-sends a message.
+model Notification {
+  id        String              @id @default(cuid())
+  userId    String
+  bookingId String?
+  channel   NotificationChannel
+  type      NotificationType
+  status    NotificationStatus  @default(PENDING)
+  locale    String
+  to        String
+  subject   String
+  body      String
+  error     String?
+  createdAt DateTime            @default(now())
+  sentAt    DateTime?
+
+  user    User     @relation(fields: [userId], references: [id])
+  booking Booking? @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@unique([bookingId, type])
+  @@index([userId])
   @@index([status])
 }
 

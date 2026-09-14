@@ -101,7 +101,11 @@
     "customers": "العملاء",
     "confirmPayment": "تأكيد الدفع",
     "markCompleted": "وضع كمكتمل",
-    "comingSoon": "قريباً"
+    "comingSoon": "قريباً",
+    "notifications": "الإشعارات",
+    "notifEmpty": "لا توجد إشعارات بعد.",
+    "notifType": { "BOOKING_RECEIVED": "استلام الحجز", "PAYMENT_CONFIRMED": "تأكيد الدفع" },
+    "notifStatus": { "SENT": "أُرسل", "PENDING": "قيد الإرسال", "FAILED": "فشل" }
   },
   "payment": {
     "payOnline": "ادفع العربون الآن",

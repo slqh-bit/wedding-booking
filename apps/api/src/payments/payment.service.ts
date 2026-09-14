@@ -4,6 +4,7 @@ import { prisma } from '../db.js';
 import { env, fiscalConfig } from '../env.js';
 import { AppError } from '../http/errors.js';
 import { toBookingDTO } from '../http/serialize.js';
+import { notifyPaymentConfirmed } from '../notifications/notification.service.js';
 import { getGateway } from './gateway.factory.js';
 
 const bookingInclude = {
@@ -62,6 +63,9 @@ export async function settlePayment(paymentId: string, opts: { adminId?: string 
       });
     }
   });
+
+  // Best-effort "payment confirmed" email (deduped, never blocks settlement).
+  await notifyPaymentConfirmed(booking.id);
 
   return toBookingDTO(await reload(booking.id));
 }

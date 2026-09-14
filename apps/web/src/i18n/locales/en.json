@@ -101,7 +101,11 @@
     "customers": "Customers",
     "confirmPayment": "Confirm payment",
     "markCompleted": "Mark completed",
-    "comingSoon": "Coming soon"
+    "comingSoon": "Coming soon",
+    "notifications": "Notifications",
+    "notifEmpty": "No notifications yet.",
+    "notifType": { "BOOKING_RECEIVED": "Booking received", "PAYMENT_CONFIRMED": "Payment confirmed" },
+    "notifStatus": { "SENT": "Sent", "PENDING": "Pending", "FAILED": "Failed" }
   },
   "payment": {
     "payOnline": "Pay deposit online",

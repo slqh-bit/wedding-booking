@@ -10,6 +10,8 @@ import { AppError } from '../http/errors.js';
 import { toBookingDTO, toOfferingDTO } from '../http/serialize.js';
 import { settlePayment } from '../payments/payment.service.js';
 
+export { listNotifications } from '../notifications/notification.service.js';
+
 // ── Offerings CRUD ──────────────────────────────────────
 async function platformVendorId(): Promise<string> {
   const vendor = await prisma.vendor.findFirst({ where: { isPlatformOwned: true } });

@@ -33,6 +33,15 @@ const envSchema = z.object({
   KONNECT_WALLET_ID: z.string().default(''),
   KONNECT_BASE_URL: z.string().default('https://api.konnect.network/api/v2'),
   KONNECT_WEBHOOK_SECRET: z.string().default(''),
+
+  // Notifications (Phase 2). `console` logs instead of sending (dev/test default).
+  NOTIFY_PROVIDER: z.enum(['console', 'smtp']).default('console'),
+  NOTIFY_FROM: z.string().default('حفلاتي <no-reply@hafalati.tn>'),
+  SMTP_HOST: z.string().default(''),
+  SMTP_PORT: z.coerce.number().default(587),
+  SMTP_SECURE: z.coerce.boolean().default(false),
+  SMTP_USER: z.string().default(''),
+  SMTP_PASS: z.string().default(''),
 });
 
 // In test we don't require real secrets; provide safe fallbacks.

@@ -101,7 +101,11 @@
     "customers": "Clients",
     "confirmPayment": "Confirmer le paiement",
     "markCompleted": "Marquer terminé",
-    "comingSoon": "Bientôt"
+    "comingSoon": "Bientôt",
+    "notifications": "Notifications",
+    "notifEmpty": "Aucune notification pour l’instant.",
+    "notifType": { "BOOKING_RECEIVED": "Réservation reçue", "PAYMENT_CONFIRMED": "Paiement confirmé" },
+    "notifStatus": { "SENT": "Envoyée", "PENDING": "En attente", "FAILED": "Échec" }
   },
   "payment": {
     "payOnline": "Payer l’acompte en ligne",

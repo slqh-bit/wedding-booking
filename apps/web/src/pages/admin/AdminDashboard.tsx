@@ -7,8 +7,9 @@ import { ComingSoonBadge } from '@/design/ComingSoon';
 import { AdminStatsCards } from './AdminStatsCards';
 import { AdminBookings } from './AdminBookings';
 import { AdminOfferings } from './AdminOfferings';
+import { AdminNotifications } from './AdminNotifications';
 
-type Tab = 'dashboard' | 'bookings' | 'offerings';
+type Tab = 'dashboard' | 'bookings' | 'offerings' | 'notifications';
 
 export function AdminDashboard() {
   const { t } = useTranslation();
@@ -19,6 +20,7 @@ export function AdminDashboard() {
     { id: 'dashboard', label: t('admin.dashboard') },
     { id: 'bookings', label: t('admin.bookings') },
     { id: 'offerings', label: t('admin.offerings') },
+    { id: 'notifications', label: t('admin.notifications') },
   ];
 
   return (
@@ -51,6 +53,7 @@ export function AdminDashboard() {
       {tab === 'dashboard' && <AdminStatsCards stats={stats} />}
       {tab === 'bookings' && <AdminBookings />}
       {tab === 'offerings' && <AdminOfferings />}
+      {tab === 'notifications' && <AdminNotifications />}
     </div>
   );
 }

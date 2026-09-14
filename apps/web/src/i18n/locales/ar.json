@@ -1,0 +1,113 @@
+{
+  "brand": { "name": "حفلاتي", "tagline": "تنظيم الحفلات والمناسبات" },
+  "nav": {
+    "home": "الرئيسية",
+    "services": "الخدمات",
+    "plan": "خطّط حفلتك",
+    "account": "حسابي",
+    "admin": "لوحة التحكم",
+    "login": "تسجيل الدخول",
+    "logout": "تسجيل الخروج"
+  },
+  "home": {
+    "heroTitlePre": "صمّم حفلتك",
+    "heroTitleHi": "بكل سهولة",
+    "heroSubtitle": "قاعة • تصوير • ديكور • تجميل • فساتين • موسيقى • ضيافة • كيك • زهور • دعوات • نقل",
+    "cta": "ابدأ التخطيط الآن",
+    "servicesTitle": "خدماتنا المتكاملة",
+    "servicesSubtitle": "كل ما تحتاجه لتنظيم مناسبة مثالية في مكان واحد",
+    "stepsTitle": "خطّط حفلتك في 11 خطوة سهلة"
+  },
+  "wizard": {
+    "next": "التالي",
+    "prev": "السابق",
+    "summary": "الملخص",
+    "selectPrompt": "اختر خياراً للمتابعة",
+    "skipOptional": "تخطّي (اختياري)",
+    "step": "الخطوة",
+    "of": "من",
+    "startingPrice": "يبدأ من",
+    "selected": "تم الاختيار"
+  },
+  "summary": {
+    "title": "ملخص اختياراتك",
+    "subtitle": "راجع اختياراتك قبل التأكيد",
+    "empty": "لم تقم بأي اختيار بعد.",
+    "subtotal": "المجموع الفرعي",
+    "tva": "الضريبة على القيمة المضافة (19%)",
+    "timbre": "الطابع الجبائي",
+    "total": "الإجمالي",
+    "deposit": "العربون المطلوب",
+    "balance": "الباقي عند المناسبة",
+    "eventDate": "تاريخ المناسبة",
+    "eventType": "نوع المناسبة",
+    "notes": "ملاحظات إضافية",
+    "confirm": "تأكيد الطلب",
+    "loginToBook": "سجّل الدخول لإتمام الحجز",
+    "pickDate": "اختر التاريخ والنوع للمتابعة"
+  },
+  "eventTypes": {
+    "WEDDING": "زفاف",
+    "ENGAGEMENT": "خطوبة",
+    "BIRTHDAY": "عيد ميلاد",
+    "GRADUATION": "تخرّج",
+    "OTHER": "أخرى"
+  },
+  "confirmation": {
+    "title": "تم استلام طلبك بنجاح!",
+    "subtitle": "احتفظ برقم الحجز — سنتواصل معك لتأكيد التفاصيل.",
+    "reference": "رقم الحجز",
+    "depositNote": "لتأكيد الحجز، يُرجى تحويل العربون عبر:",
+    "viewBookings": "عرض حجوزاتي",
+    "backHome": "العودة للرئيسية"
+  },
+  "account": {
+    "title": "حجوزاتي",
+    "empty": "لا توجد حجوزات بعد.",
+    "startPlanning": "ابدأ التخطيط",
+    "cancel": "إلغاء الحجز",
+    "cancelConfirm": "هل أنت متأكد من إلغاء هذا الحجز؟"
+  },
+  "status": {
+    "DRAFT": "مسودّة",
+    "PENDING": "بانتظار الدفع",
+    "CONFIRMED": "مؤكّد",
+    "CANCELLED": "ملغى",
+    "COMPLETED": "مكتمل"
+  },
+  "auth": {
+    "loginTitle": "تسجيل الدخول",
+    "registerTitle": "إنشاء حساب",
+    "fullName": "الاسم الكامل",
+    "email": "البريد الإلكتروني",
+    "phone": "رقم الهاتف",
+    "password": "كلمة المرور",
+    "loginBtn": "دخول",
+    "registerBtn": "إنشاء حساب",
+    "noAccount": "ليس لديك حساب؟",
+    "haveAccount": "لديك حساب بالفعل؟",
+    "createOne": "أنشئ حساباً",
+    "signIn": "سجّل الدخول",
+    "invalid": "بيانات الدخول غير صحيحة"
+  },
+  "admin": {
+    "title": "لوحة التحكم",
+    "dashboard": "الإحصائيات",
+    "offerings": "الخدمات",
+    "bookings": "الحجوزات",
+    "revenue": "الإيرادات المؤكّدة",
+    "upcoming": "مناسبات قادمة",
+    "activeOfferings": "خدمات نشطة",
+    "customers": "العملاء",
+    "confirmPayment": "تأكيد الدفع",
+    "markCompleted": "وضع كمكتمل",
+    "comingSoon": "قريباً"
+  },
+  "common": {
+    "loading": "جارٍ التحميل…",
+    "error": "حدث خطأ ما",
+    "retry": "إعادة المحاولة",
+    "currency": "د.ت",
+    "comingSoon": "قريباً"
+  }
+}

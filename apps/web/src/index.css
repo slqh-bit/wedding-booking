@@ -1,0 +1,93 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  body {
+    @apply bg-ivory-100 text-blush-900 antialiased;
+    background-image: theme('backgroundImage.ivory-radial');
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+
+  /* Elegant gold scrollbar accents */
+  ::selection {
+    @apply bg-gold-200 text-blush-900;
+  }
+}
+
+@layer components {
+  /* Gold-foil heading text */
+  .text-gold-foil {
+    @apply bg-gold-gradient bg-clip-text text-transparent;
+  }
+
+  /* Premium card surface */
+  .surface {
+    @apply rounded-3xl border border-gold-100 bg-white/90 shadow-soft backdrop-blur;
+  }
+
+  /* Thin ornamental gold divider with a center diamond */
+  .ornament {
+    @apply relative flex items-center justify-center gap-3 text-gold-500;
+  }
+  .ornament::before,
+  .ornament::after {
+    content: '';
+    @apply h-px w-16 bg-gradient-to-l from-transparent via-gold-400 to-transparent sm:w-28;
+  }
+
+  /* Shimmer skeleton loader */
+  .skeleton {
+    @apply relative overflow-hidden rounded-2xl bg-gold-50;
+  }
+  .skeleton::after {
+    content: '';
+    @apply absolute inset-0 -translate-x-full;
+    background-image: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0,
+      rgba(255, 255, 255, 0.6) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    animation: shimmer 1.4s infinite;
+  }
+  [dir='rtl'] .skeleton::after {
+    animation-direction: reverse;
+  }
+}
+
+@layer utilities {
+  .tap-highlight-none {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* Confetti burst used on booking success */
+.confetti-piece {
+  position: absolute;
+  width: 9px;
+  height: 14px;
+  top: -20px;
+  opacity: 0;
+  animation: confetti-fall 2.4s ease-in forwards;
+}
+@keyframes confetti-fall {
+  0% {
+    opacity: 1;
+    transform: translateY(-10px) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(90vh) rotate(540deg);
+  }
+}
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}

@@ -1,0 +1,42 @@
+import 'dotenv/config';
+import { z } from 'zod';
+
+const envSchema = z.object({
+  NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
+  API_PORT: z.coerce.number().default(4000),
+  DATABASE_URL: z.string().url(),
+
+  JWT_ACCESS_SECRET: z.string().min(16),
+  JWT_REFRESH_SECRET: z.string().min(16),
+  JWT_ACCESS_TTL: z.string().default('15m'),
+  JWT_REFRESH_TTL: z.string().default('30d'),
+
+  WEB_ORIGIN: z.string().default('http://localhost:5173'),
+
+  TVA_RATE: z.coerce.number().default(0.19),
+  TIMBRE_FISCAL_TND: z.coerce.number().default(1.0),
+  DEPOSIT_RATE: z.coerce.number().default(0.3),
+
+  PLATFORM_NAME: z.string().default('حفلاتي'),
+  PLATFORM_PHONE: z.string().default(''),
+  PLATFORM_EMAIL: z.string().default(''),
+  PLATFORM_ADDRESS: z.string().default(''),
+  BANK_TRANSFER_DETAILS: z.string().default(''),
+});
+
+// In test we don't require real secrets; provide safe fallbacks.
+const raw = {
+  ...process.env,
+  JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET ?? 'test-access-secret-000000000000000',
+  JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET ?? 'test-refresh-secret-00000000000000',
+  DATABASE_URL:
+    process.env.DATABASE_URL ?? 'postgresql://hafalati:hafalati@localhost:5432/hafalati?schema=public',
+};
+
+export const env = envSchema.parse(raw);
+
+export const fiscalConfig = {
+  tvaRate: env.TVA_RATE,
+  timbreFiscalTnd: env.TIMBRE_FISCAL_TND,
+  depositRate: env.DEPOSIT_RATE,
+};

@@ -1,0 +1,113 @@
+{
+  "brand": { "name": "Hafalati", "tagline": "Events & celebrations planning" },
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "plan": "Plan your event",
+    "account": "My account",
+    "admin": "Admin",
+    "login": "Log in",
+    "logout": "Log out"
+  },
+  "home": {
+    "heroTitlePre": "Design your celebration",
+    "heroTitleHi": "with ease",
+    "heroSubtitle": "Hall • Photography • Decor • Beauty • Dresses • Music • Catering • Cake • Flowers • Invitations • Transport",
+    "cta": "Start planning now",
+    "servicesTitle": "Our all-in-one services",
+    "servicesSubtitle": "Everything you need for a perfect event, in one place",
+    "stepsTitle": "Plan your event in 11 easy steps"
+  },
+  "wizard": {
+    "next": "Next",
+    "prev": "Back",
+    "summary": "Summary",
+    "selectPrompt": "Choose an option to continue",
+    "skipOptional": "Skip (optional)",
+    "step": "Step",
+    "of": "of",
+    "startingPrice": "From",
+    "selected": "Selected"
+  },
+  "summary": {
+    "title": "Your selections",
+    "subtitle": "Review your choices before confirming",
+    "empty": "No selections yet.",
+    "subtotal": "Subtotal",
+    "tva": "VAT (19%)",
+    "timbre": "Fiscal stamp",
+    "total": "Total",
+    "deposit": "Deposit required",
+    "balance": "Balance on the day",
+    "eventDate": "Event date",
+    "eventType": "Event type",
+    "notes": "Additional notes",
+    "confirm": "Confirm request",
+    "loginToBook": "Log in to book",
+    "pickDate": "Pick a date and type to continue"
+  },
+  "eventTypes": {
+    "WEDDING": "Wedding",
+    "ENGAGEMENT": "Engagement",
+    "BIRTHDAY": "Birthday",
+    "GRADUATION": "Graduation",
+    "OTHER": "Other"
+  },
+  "confirmation": {
+    "title": "Your request was received!",
+    "subtitle": "Keep your reference — we’ll contact you to confirm the details.",
+    "reference": "Reference",
+    "depositNote": "To confirm your booking, please transfer the deposit via:",
+    "viewBookings": "View my bookings",
+    "backHome": "Back home"
+  },
+  "account": {
+    "title": "My bookings",
+    "empty": "No bookings yet.",
+    "startPlanning": "Start planning",
+    "cancel": "Cancel booking",
+    "cancelConfirm": "Cancel this booking?"
+  },
+  "status": {
+    "DRAFT": "Draft",
+    "PENDING": "Awaiting payment",
+    "CONFIRMED": "Confirmed",
+    "CANCELLED": "Cancelled",
+    "COMPLETED": "Completed"
+  },
+  "auth": {
+    "loginTitle": "Log in",
+    "registerTitle": "Create account",
+    "fullName": "Full name",
+    "email": "Email",
+    "phone": "Phone",
+    "password": "Password",
+    "loginBtn": "Sign in",
+    "registerBtn": "Create account",
+    "noAccount": "No account?",
+    "haveAccount": "Already have an account?",
+    "createOne": "Create one",
+    "signIn": "Sign in",
+    "invalid": "Invalid credentials"
+  },
+  "admin": {
+    "title": "Admin dashboard",
+    "dashboard": "Stats",
+    "offerings": "Offerings",
+    "bookings": "Bookings",
+    "revenue": "Confirmed revenue",
+    "upcoming": "Upcoming events",
+    "activeOfferings": "Active offerings",
+    "customers": "Customers",
+    "confirmPayment": "Confirm payment",
+    "markCompleted": "Mark completed",
+    "comingSoon": "Coming soon"
+  },
+  "common": {
+    "loading": "Loading…",
+    "error": "Something went wrong",
+    "retry": "Retry",
+    "currency": "TND",
+    "comingSoon": "Coming soon"
+  }
+}

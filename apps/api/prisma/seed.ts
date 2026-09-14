@@ -1,0 +1,216 @@
+/**
+ * Seed: ports the original prototype's 11-category catalog into real
+ * ServiceOffering rows — converted to TND, trilingual (ar/fr/en) — plus a
+ * platform-owned vendor, an admin + demo customer, and forward availability
+ * for date-bound categories.
+ *
+ * Run: pnpm --filter @hafalati/api prisma:seed
+ */
+import { PrismaClient, Prisma } from '@prisma/client';
+import argon2 from 'argon2';
+import {
+  AvailabilityMode,
+  CATEGORY_META,
+  ServiceCategory,
+  isDateBound,
+  type LocalizedString,
+} from '@hafalati/shared';
+
+const prisma = new PrismaClient();
+
+interface SeedOffering {
+  name: LocalizedString;
+  description: LocalizedString;
+  price: number; // TND
+  emoji: string;
+  attributes: Record<string, unknown>;
+}
+
+// prettier-ignore
+const CATALOG: Record<ServiceCategory, SeedOffering[]> = {
+  HALL: [
+    { emoji: '🏛️', price: 4500, attributes: { capacity: 300 }, name: { ar: 'قاعة الأحلام', fr: 'Salle des Rêves', en: 'Dream Hall' }, description: { ar: 'قاعة فاخرة بديكور كلاسيكي', fr: 'Salle luxueuse au décor classique', en: 'Luxurious hall with classic decor' } },
+    { emoji: '✨', price: 2700, attributes: { capacity: 150 }, name: { ar: 'قاعة النور', fr: 'Salle Nour', en: 'Nour Hall' }, description: { ar: 'تصميم عصري وإضاءة مميّزة', fr: 'Design moderne et éclairage soigné', en: 'Modern design and refined lighting' } },
+    { emoji: '🌹', price: 6600, attributes: { capacity: 500 }, name: { ar: 'قاعة الورود', fr: 'Salle des Roses', en: 'Roses Hall' }, description: { ar: 'مساحة واسعة وحديقة خارجية', fr: 'Grand espace avec jardin extérieur', en: 'Spacious venue with outdoor garden' } },
+    { emoji: '🏰', price: 3600, attributes: { capacity: 200 }, name: { ar: 'قاعة القصر', fr: 'Salle du Palais', en: 'Palace Hall' }, description: { ar: 'أجواء ملكية راقية', fr: 'Ambiance royale et raffinée', en: 'Refined royal atmosphere' } },
+    { emoji: '☁️', price: 2100, attributes: { capacity: 100 }, name: { ar: 'قاعة السماء', fr: 'Salle du Ciel', en: 'Sky Hall' }, description: { ar: 'مناسبة للحفلات الصغيرة', fr: 'Idéale pour les petites fêtes', en: 'Perfect for small celebrations' } },
+    { emoji: '🥇', price: 5400, attributes: { capacity: 400 }, name: { ar: 'قاعة الذهب', fr: 'Salle d’Or', en: 'Gold Hall' }, description: { ar: 'فخامة لا مثيل لها', fr: 'Un luxe incomparable', en: 'Unmatched luxury' } },
+  ],
+  PHOTOGRAPHY: [
+    { emoji: '📷', price: 1200, attributes: { style: 'كلاسيكي + عصري' }, name: { ar: 'استوديو الرؤية', fr: 'Studio Vision', en: 'Vision Studio' }, description: { ar: 'خبرة أكثر من 10 سنوات', fr: 'Plus de 10 ans d’expérience', en: 'Over 10 years of experience' } },
+    { emoji: '🎥', price: 950, attributes: { style: 'تصوير طبيعي' }, name: { ar: 'عدسة السعادة', fr: 'Lentille du Bonheur', en: 'Happy Lens' }, description: { ar: 'فيديو + صور عالية الجودة', fr: 'Vidéo + photos haute qualité', en: 'HD video + photos' } },
+    { emoji: '🎨', price: 1450, attributes: { style: 'فني وإبداعي' }, name: { ar: 'لمسة فن', fr: 'Touche d’Art', en: 'Art Touch' }, description: { ar: 'أسلوب فني مميّز', fr: 'Un style artistique unique', en: 'A distinctive artistic style' } },
+    { emoji: '🖼️', price: 1050, attributes: { style: 'تقليدي وحديث' }, name: { ar: 'ذكرى للأبد', fr: 'Souvenir Éternel', en: 'Forever Memory' }, description: { ar: 'باقات مرنة', fr: 'Formules flexibles', en: 'Flexible packages' } },
+  ],
+  DECOR: [
+    { emoji: '🤍', price: 1500, attributes: { theme: 'كلاسيكي' }, name: { ar: 'الورود البيضاء', fr: 'Roses Blanches', en: 'White Roses' }, description: { ar: 'ورود بيضاء وإضاءة ناعمة', fr: 'Roses blanches et éclairage doux', en: 'White roses and soft lighting' } },
+    { emoji: '🌷', price: 1350, attributes: { theme: 'ملوّن' }, name: { ar: 'باقة الربيع', fr: 'Bouquet Printemps', en: 'Spring Bouquet' }, description: { ar: 'ألوان زاهية وأزهار طبيعية', fr: 'Couleurs vives et fleurs naturelles', en: 'Bright colors and natural flowers' } },
+    { emoji: '✨', price: 2400, attributes: { theme: 'فاخر' }, name: { ar: 'الذهب الملكي', fr: 'Or Royal', en: 'Royal Gold' }, description: { ar: 'تفاصيل ذهبية فاخرة', fr: 'Détails dorés luxueux', en: 'Luxurious gold details' } },
+    { emoji: '🌿', price: 950, attributes: { theme: 'بسيط' }, name: { ar: 'الحد الأدنى', fr: 'Minimaliste', en: 'Minimal' }, description: { ar: 'تصميم أنيق وبسيط', fr: 'Design élégant et épuré', en: 'Elegant, minimal design' } },
+    { emoji: '⭐', price: 1800, attributes: { theme: 'ليلي' }, name: { ar: 'باقة النجوم', fr: 'Bouquet Étoilé', en: 'Starry Theme' }, description: { ar: 'إضاءة نجوم وسماء', fr: 'Éclairage étoilé', en: 'Starlight ambiance' } },
+  ],
+  BEAUTY: [
+    { emoji: '👰', price: 750, attributes: { includes: 'شعر + مكياج + أظافر' }, name: { ar: 'باقة العروس الكاملة', fr: 'Forfait Mariée Complet', en: 'Complete Bride Package' }, description: { ar: 'جلسة كاملة للعروس', fr: 'Séance complète pour la mariée', en: 'Full session for the bride' } },
+    { emoji: '💄', price: 360, attributes: { includes: 'شعر + مكياج' }, name: { ar: 'باقة الصديقات', fr: 'Forfait Amies', en: 'Friends Package' }, description: { ar: 'للصديقات والمرافقات', fr: 'Pour les amies et accompagnantes', en: 'For friends and companions' } },
+    { emoji: '💈', price: 120, attributes: { includes: 'حلاقة + تهذيب' }, name: { ar: 'باقة العريس', fr: 'Forfait Marié', en: 'Groom Package' }, description: { ar: 'إطلالة أنيقة للعريس', fr: 'Un look élégant pour le marié', en: 'An elegant look for the groom' } },
+    { emoji: '👑', price: 1150, attributes: { includes: 'كل شيء + مساج' }, name: { ar: 'باقة VIP', fr: 'Forfait VIP', en: 'VIP Package' }, description: { ar: 'تجربة فاخرة كاملة', fr: 'Une expérience de luxe complète', en: 'A complete luxury experience' } },
+  ],
+  DRESS: [
+    { emoji: '👗', price: 1350, attributes: { style: 'كلاسيكي' }, name: { ar: 'فستان الأميرة', fr: 'Robe Princesse', en: 'Princess Dress' }, description: { ar: 'تطريز يدوي فاخر', fr: 'Broderie à la main luxueuse', en: 'Luxurious hand embroidery' } },
+    { emoji: '✨', price: 1150, attributes: { style: 'عصري' }, name: { ar: 'فستان الحداثة', fr: 'Robe Moderne', en: 'Modern Dress' }, description: { ar: 'قصّة حديثة وأنيقة', fr: 'Coupe moderne et élégante', en: 'Modern, elegant cut' } },
+    { emoji: '🌸', price: 950, attributes: { style: 'رومانسي' }, name: { ar: 'فستان الورود', fr: 'Robe Fleurie', en: 'Floral Dress' }, description: { ar: 'تفاصيل ورود ناعمة', fr: 'Détails floraux délicats', en: 'Delicate floral details' } },
+    { emoji: '🦢', price: 850, attributes: { style: 'خفيف' }, name: { ar: 'فستان الشيفون', fr: 'Robe Mousseline', en: 'Chiffon Dress' }, description: { ar: 'خامة شيفون فاخرة', fr: 'Mousseline de qualité', en: 'Premium chiffon fabric' } },
+    { emoji: '💎', price: 1500, attributes: { style: 'سهرة' }, name: { ar: 'فستان السهرة', fr: 'Robe de Soirée', en: 'Evening Gown' }, description: { ar: 'مثالي للحفلات المسائية', fr: 'Idéale pour les soirées', en: 'Perfect for evening events' } },
+  ],
+  MUSIC: [
+    { emoji: '🎧', price: 750, attributes: { type: 'دي جي' }, name: { ar: 'دي جي محترف', fr: 'DJ Professionnel', en: 'Professional DJ' }, description: { ar: 'أغاني حديثة + إضاءة', fr: 'Musiques modernes + éclairage', en: 'Modern tracks + lighting' } },
+    { emoji: '🎸', price: 1800, attributes: { type: 'فرقة حية' }, name: { ar: 'فرقة موسيقية حية', fr: 'Groupe Live', en: 'Live Band' }, description: { ar: 'عزف حي مع مطرب', fr: 'Musique live avec chanteur', en: 'Live music with a singer' } },
+    { emoji: '🥁', price: 1350, attributes: { type: 'تراث' }, name: { ar: 'فرقة تراثية', fr: 'Groupe Traditionnel', en: 'Folk Band' }, description: { ar: 'موسيقى شعبية وتونسية', fr: 'Musique populaire tunisienne', en: 'Tunisian folk music' } },
+    { emoji: '🎻', price: 1150, attributes: { type: 'كلاسيكي' }, name: { ar: 'موسيقى كلاسيكية', fr: 'Musique Classique', en: 'Classical Music' }, description: { ar: 'أوركسترا أو عازف بيانو', fr: 'Orchestre ou pianiste', en: 'Orchestra or pianist' } },
+    { emoji: '🔊', price: 360, attributes: { type: 'صوتيات' }, name: { ar: 'نظام صوت', fr: 'Système Son', en: 'Sound System' }, description: { ar: 'نظام صوت احترافي', fr: 'Système de son professionnel', en: 'Professional sound system' } },
+  ],
+  CATERING: [
+    { emoji: '🍽️', price: 5400, attributes: { type: 'بوفيه' }, name: { ar: 'بوفيه مفتوح فاخر', fr: 'Buffet Ouvert Luxe', en: 'Luxury Open Buffet' }, description: { ar: 'أكثر من 40 صنف + مشروبات', fr: 'Plus de 40 plats + boissons', en: '40+ dishes + drinks' } },
+    { emoji: '🦞', price: 6600, attributes: { type: 'عشاء رسمي' }, name: { ar: 'عشاء رسمي', fr: 'Dîner Servi', en: 'Formal Dinner' }, description: { ar: 'قائمة راقية لكل ضيف', fr: 'Menu raffiné par invité', en: 'Refined per-guest menu' } },
+    { emoji: '🥪', price: 1950, attributes: { type: 'خفيف' }, name: { ar: 'ضيافة خفيفة', fr: 'Réception Légère', en: 'Light Reception' }, description: { ar: 'كانابيه ومعجّنات', fr: 'Canapés et viennoiseries', en: 'Canapés and pastries' } },
+    { emoji: '🍛', price: 4200, attributes: { type: 'تونسي' }, name: { ar: 'بوفيه تونسي', fr: 'Buffet Tunisien', en: 'Tunisian Buffet' }, description: { ar: 'مأكولات تونسية أصيلة', fr: 'Cuisine tunisienne authentique', en: 'Authentic Tunisian cuisine' } },
+    { emoji: '☕', price: 1200, attributes: { type: 'خدمة' }, name: { ar: 'خدمة الضيافة', fr: 'Service Boissons', en: 'Beverage Service' }, description: { ar: 'قهوة، شاي ومشروبات', fr: 'Café, thé et boissons', en: 'Coffee, tea and drinks' } },
+  ],
+  CAKE: [
+    { emoji: '👰', price: 850, attributes: { type: 'زفاف' }, name: { ar: 'كيك الزفاف الفاخر', fr: 'Gâteau de Mariage', en: 'Luxury Wedding Cake' }, description: { ar: '3-5 طوابق مع تزيين يدوي', fr: '3 à 5 étages décorés main', en: '3–5 tiers, hand-decorated' } },
+    { emoji: '🎂', price: 270, attributes: { type: 'عيد ميلاد' }, name: { ar: 'كيك عيد ميلاد', fr: 'Gâteau d’Anniversaire', en: 'Birthday Cake' }, description: { ar: 'تصميم حسب الطلب', fr: 'Design personnalisé', en: 'Custom design' } },
+    { emoji: '🧁', price: 1350, attributes: { type: 'حلويات' }, name: { ar: 'طاولة حلويات', fr: 'Table de Douceurs', en: 'Dessert Table' }, description: { ar: 'كيك + كب كيك + ماكرون', fr: 'Gâteau + cupcakes + macarons', en: 'Cake + cupcakes + macarons' } },
+    { emoji: '🍪', price: 650, attributes: { type: 'شرقي' }, name: { ar: 'حلويات تونسية', fr: 'Douceurs Tunisiennes', en: 'Tunisian Sweets' }, description: { ar: 'بقلاوة، مقروض وكعك', fr: 'Baklava, makroudh et kaak', en: 'Baklava, makroudh and kaak' } },
+    { emoji: '🥮', price: 195, attributes: { type: 'صغير' }, name: { ar: 'كيك صغير أنيق', fr: 'Petit Gâteau', en: 'Elegant Small Cake' }, description: { ar: 'مناسب للحفلات الصغيرة', fr: 'Idéal pour petites fêtes', en: 'Great for small parties' } },
+  ],
+  FLOWERS: [
+    { emoji: '💐', price: 540, attributes: { type: 'عروس' }, name: { ar: 'باقة العروس', fr: 'Bouquet de la Mariée', en: 'Bridal Bouquet' }, description: { ar: 'ورود طبيعية بتنسيق فاخر', fr: 'Fleurs naturelles élégantes', en: 'Elegant natural flowers' } },
+    { emoji: '🌺', price: 1350, attributes: { type: 'طاولات' }, name: { ar: 'تنسيق الطاولات', fr: 'Décor de Tables', en: 'Table Arrangements' }, description: { ar: 'زهور لكل طاولة + مدخل', fr: 'Fleurs par table + entrée', en: 'Flowers per table + entrance' } },
+    { emoji: '🤍', price: 650, attributes: { type: 'كلاسيكي' }, name: { ar: 'باقة بيضاء كلاسيكية', fr: 'Bouquet Blanc Classique', en: 'Classic White Bouquet' }, description: { ar: 'ورود بيضاء موسمية', fr: 'Roses blanches de saison', en: 'Seasonal white roses' } },
+    { emoji: '🌷', price: 850, attributes: { type: 'ملوّن' }, name: { ar: 'تنسيق ربيعي ملوّن', fr: 'Arrangement Printanier', en: 'Colorful Spring' }, description: { ar: 'ألوان زاهية متنوّعة', fr: 'Couleurs vives variées', en: 'Bright, varied colors' } },
+    { emoji: '🌿', price: 360, attributes: { type: 'صناعي' }, name: { ar: 'زهور صناعية أنيقة', fr: 'Fleurs Artificielles', en: 'Elegant Faux Flowers' }, description: { ar: 'خيار اقتصادي يدوم', fr: 'Option économique durable', en: 'Long-lasting budget option' } },
+  ],
+  INVITATIONS: [
+    { emoji: '✉️', price: 450, attributes: { type: 'ورقي' }, name: { ar: 'دعوات ورقية فاخرة', fr: 'Invitations Papier Luxe', en: 'Luxury Paper Invites' }, description: { ar: 'طباعة عالية + أظرف (100)', fr: 'Impression + enveloppes (100)', en: 'HD print + envelopes (100)' } },
+    { emoji: '📱', price: 120, attributes: { type: 'إلكتروني' }, name: { ar: 'دعوات إلكترونية', fr: 'Invitations Digitales', en: 'Digital Invites' }, description: { ar: 'تصميم + إرسال واتساب', fr: 'Design + envoi WhatsApp', en: 'Design + WhatsApp delivery' } },
+    { emoji: '✨', price: 850, attributes: { type: 'فاخر' }, name: { ar: 'دعوات ذهبية', fr: 'Invitations Dorées', en: 'Gold Invites' }, description: { ar: 'ورق سميك وطباعة ذهبية', fr: 'Papier épais, dorure', en: 'Thick paper, gold foil' } },
+    { emoji: '🎬', price: 240, attributes: { type: 'فيديو' }, name: { ar: 'دعوة فيديو', fr: 'Invitation Vidéo', en: 'Video Invite' }, description: { ar: 'فيديو دعوة متحرّك', fr: 'Vidéo d’invitation animée', en: 'Animated invitation video' } },
+  ],
+  TRANSPORT: [
+    { emoji: '🚘', price: 750, attributes: { type: 'عروس' }, name: { ar: 'سيارة العروس الفاخرة', fr: 'Voiture des Mariés', en: 'Luxury Bridal Car' }, description: { ar: 'سيارة فاخرة مع سائق', fr: 'Voiture de luxe avec chauffeur', en: 'Luxury car with driver' } },
+    { emoji: '🚌', price: 540, attributes: { type: 'حافلة' }, name: { ar: 'حافلة نقل الضيوف', fr: 'Bus des Invités', en: 'Guest Bus' }, description: { ar: 'حافلة مكيّفة لـ 50 راكب', fr: 'Bus climatisé 50 places', en: 'A/C bus for 50 guests' } },
+    { emoji: '🚗', price: 1350, attributes: { type: 'أسطول' }, name: { ar: 'أسطول سيارات', fr: 'Flotte de Voitures', en: 'Car Fleet' }, description: { ar: '5 سيارات فاخرة للعائلة', fr: '5 voitures pour la famille', en: '5 cars for the family' } },
+    { emoji: '🚙', price: 950, attributes: { type: 'ليموزين' }, name: { ar: 'ليموزين طويلة', fr: 'Limousine', en: 'Stretch Limousine' }, description: { ar: 'ليموزين فاخرة للعروسين', fr: 'Limousine pour les mariés', en: 'Limo for the couple' } },
+    { emoji: '🏎️', price: 270, attributes: { type: 'فردي' }, name: { ar: 'سيارة واحدة', fr: 'Voiture Simple', en: 'Single Car' }, description: { ar: 'سيارة فاخرة لساعات محدّدة', fr: 'Voiture de luxe à l’heure', en: 'Luxury car, hourly' } },
+  ],
+};
+
+function addDays(base: Date, days: number): Date {
+  const d = new Date(base);
+  d.setUTCDate(d.getUTCDate() + days);
+  return d;
+}
+
+async function main() {
+  console.log('🌱 Seeding حفلاتي…');
+
+  // ── Reset (idempotent seed) ─────────────────────────────
+  await prisma.availability.deleteMany();
+  await prisma.bookingItem.deleteMany();
+  await prisma.payment.deleteMany();
+  await prisma.invoice.deleteMany();
+  await prisma.booking.deleteMany();
+  await prisma.serviceOffering.deleteMany();
+  await prisma.vendor.deleteMany();
+  await prisma.user.deleteMany();
+
+  // ── Users ───────────────────────────────────────────────
+  const adminPassword = await argon2.hash('Admin1234');
+  const customerPassword = await argon2.hash('Customer1234');
+
+  const admin = await prisma.user.create({
+    data: {
+      email: 'admin@hafalati.tn',
+      phone: '+21697580081',
+      passwordHash: adminPassword,
+      fullName: 'مدير حفلاتي',
+      role: 'ADMIN',
+      locale: 'ar',
+    },
+  });
+
+  await prisma.user.create({
+    data: {
+      email: 'client@hafalati.tn',
+      phone: '+21620000000',
+      passwordHash: customerPassword,
+      fullName: 'عميل تجريبي',
+      role: 'CUSTOMER',
+      locale: 'ar',
+    },
+  });
+
+  // ── Platform vendor (owns all MVP offerings) ────────────
+  const vendor = await prisma.vendor.create({
+    data: {
+      name: 'حفلاتي',
+      description: 'منصّة تنظيم الحفلات والمناسبات',
+      phone: '+21697580081',
+      isPlatformOwned: true,
+    },
+  });
+
+  // ── Offerings + availability ────────────────────────────
+  const today = new Date();
+  const startOfToday = new Date(
+    Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()),
+  );
+  const AVAILABILITY_DAYS = 120;
+
+  let offeringCount = 0;
+  for (const category of Object.keys(CATALOG) as ServiceCategory[]) {
+    for (const item of CATALOG[category]) {
+      const offering = await prisma.serviceOffering.create({
+        data: {
+          vendorId: vendor.id,
+          category,
+          name: item.name as unknown as Prisma.InputJsonValue,
+          description: item.description as unknown as Prisma.InputJsonValue,
+          basePrice: new Prisma.Decimal(item.price),
+          emoji: item.emoji,
+          attributes: item.attributes as Prisma.InputJsonValue,
+          imageUrls: [],
+          isActive: true,
+        },
+      });
+      offeringCount += 1;
+
+      if (isDateBound(category)) {
+        const rows = Array.from({ length: AVAILABILITY_DAYS }, (_, i) => ({
+          offeringId: offering.id,
+          date: addDays(startOfToday, i + 1),
+          status: 'AVAILABLE' as const,
+        }));
+        await prisma.availability.createMany({ data: rows });
+      }
+    }
+  }
+
+  console.log(
+    `✅ Seed complete: ${offeringCount} offerings across ${Object.keys(CATALOG).length} categories.`,
+  );
+  console.log('   Admin:    admin@hafalati.tn / Admin1234');
+  console.log('   Customer: client@hafalati.tn / Customer1234');
+  void CATEGORY_META;
+  void AvailabilityMode;
+  void admin;
+}
+
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

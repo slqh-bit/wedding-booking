@@ -1,0 +1,35 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# builds
+dist/
+build/
+*.tsbuildinfo
+
+# env
+.env
+.env.*
+!.env.example
+
+# prisma
+apps/api/prisma/*.db
+apps/api/prisma/migrations/dev.db*
+
+# logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# editor / os
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# uploads (local image storage in MVP)
+apps/api/uploads/*
+!apps/api/uploads/.gitkeep
+
+# test / coverage
+coverage/

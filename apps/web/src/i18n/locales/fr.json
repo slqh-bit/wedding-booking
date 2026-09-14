@@ -1,0 +1,113 @@
+{
+  "brand": { "name": "Hafalati", "tagline": "Organisation de fêtes & événements" },
+  "nav": {
+    "home": "Accueil",
+    "services": "Services",
+    "plan": "Planifier",
+    "account": "Mon compte",
+    "admin": "Administration",
+    "login": "Connexion",
+    "logout": "Déconnexion"
+  },
+  "home": {
+    "heroTitlePre": "Composez votre fête",
+    "heroTitleHi": "en toute simplicité",
+    "heroSubtitle": "Salle • Photo • Décor • Beauté • Robes • Musique • Traiteur • Gâteau • Fleurs • Invitations • Transport",
+    "cta": "Commencer maintenant",
+    "servicesTitle": "Nos services intégrés",
+    "servicesSubtitle": "Tout ce qu’il faut pour un événement parfait, au même endroit",
+    "stepsTitle": "Planifiez votre fête en 11 étapes simples"
+  },
+  "wizard": {
+    "next": "Suivant",
+    "prev": "Précédent",
+    "summary": "Récapitulatif",
+    "selectPrompt": "Choisissez une option pour continuer",
+    "skipOptional": "Ignorer (facultatif)",
+    "step": "Étape",
+    "of": "sur",
+    "startingPrice": "À partir de",
+    "selected": "Sélectionné"
+  },
+  "summary": {
+    "title": "Récapitulatif de vos choix",
+    "subtitle": "Vérifiez vos choix avant de confirmer",
+    "empty": "Aucune sélection pour le moment.",
+    "subtotal": "Sous-total",
+    "tva": "TVA (19 %)",
+    "timbre": "Timbre fiscal",
+    "total": "Total",
+    "deposit": "Acompte requis",
+    "balance": "Solde le jour J",
+    "eventDate": "Date de l’événement",
+    "eventType": "Type d’événement",
+    "notes": "Notes supplémentaires",
+    "confirm": "Confirmer la demande",
+    "loginToBook": "Connectez-vous pour réserver",
+    "pickDate": "Choisissez la date et le type pour continuer"
+  },
+  "eventTypes": {
+    "WEDDING": "Mariage",
+    "ENGAGEMENT": "Fiançailles",
+    "BIRTHDAY": "Anniversaire",
+    "GRADUATION": "Remise de diplôme",
+    "OTHER": "Autre"
+  },
+  "confirmation": {
+    "title": "Votre demande a été reçue !",
+    "subtitle": "Conservez votre référence — nous vous contacterons pour confirmer.",
+    "reference": "Référence",
+    "depositNote": "Pour confirmer, veuillez virer l’acompte via :",
+    "viewBookings": "Voir mes réservations",
+    "backHome": "Retour à l’accueil"
+  },
+  "account": {
+    "title": "Mes réservations",
+    "empty": "Aucune réservation pour l’instant.",
+    "startPlanning": "Commencer",
+    "cancel": "Annuler",
+    "cancelConfirm": "Confirmer l’annulation de cette réservation ?"
+  },
+  "status": {
+    "DRAFT": "Brouillon",
+    "PENDING": "En attente de paiement",
+    "CONFIRMED": "Confirmée",
+    "CANCELLED": "Annulée",
+    "COMPLETED": "Terminée"
+  },
+  "auth": {
+    "loginTitle": "Connexion",
+    "registerTitle": "Créer un compte",
+    "fullName": "Nom complet",
+    "email": "E-mail",
+    "phone": "Téléphone",
+    "password": "Mot de passe",
+    "loginBtn": "Se connecter",
+    "registerBtn": "Créer le compte",
+    "noAccount": "Pas de compte ?",
+    "haveAccount": "Déjà un compte ?",
+    "createOne": "Créer un compte",
+    "signIn": "Se connecter",
+    "invalid": "Identifiants invalides"
+  },
+  "admin": {
+    "title": "Administration",
+    "dashboard": "Statistiques",
+    "offerings": "Services",
+    "bookings": "Réservations",
+    "revenue": "Revenus confirmés",
+    "upcoming": "Événements à venir",
+    "activeOfferings": "Services actifs",
+    "customers": "Clients",
+    "confirmPayment": "Confirmer le paiement",
+    "markCompleted": "Marquer terminé",
+    "comingSoon": "Bientôt"
+  },
+  "common": {
+    "loading": "Chargement…",
+    "error": "Une erreur est survenue",
+    "retry": "Réessayer",
+    "currency": "DT",
+    "comingSoon": "Bientôt"
+  }
+}

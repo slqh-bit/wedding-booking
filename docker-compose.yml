@@ -1,0 +1,23 @@
+# Local development infrastructure for حفلاتي.
+# MVP: just PostgreSQL. Phase 2 will add redis + minio (image storage) here.
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: hafalati-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: hafalati
+      POSTGRES_PASSWORD: hafalati
+      POSTGRES_DB: hafalati
+    ports:
+      - "5432:5432"
+    volumes:
+      - hafalati_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hafalati -d hafalati"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  hafalati_pgdata:

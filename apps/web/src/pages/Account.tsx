@@ -9,6 +9,7 @@ import { GoldButton } from '@/design/GoldButton';
 import { StatusBadge } from '@/design/StatusBadge';
 import { Skeleton } from '@/design/Skeleton';
 import { useToast } from '@/design/Toast';
+import { TelegramLink } from './account/TelegramLink';
 
 export function Account() {
   const { t } = useTranslation();
@@ -17,6 +18,10 @@ export function Account() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
       <h1 className="font-display text-3xl font-bold text-blush-900">{t('account.title')}</h1>
+
+      <div className="mt-6">
+        <TelegramLink />
+      </div>
 
       {isLoading && (
         <div className="mt-6 space-y-4">

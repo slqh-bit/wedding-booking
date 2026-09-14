@@ -54,6 +54,18 @@ export const endpoints = {
   adminOfferings: () => api.get<{ data: OfferingDTO[] }>('/admin/offerings', true).then((r) => r.data),
   adminNotifications: () =>
     api.get<{ data: NotificationDTO[] }>('/admin/notifications', true).then((r) => r.data),
+
+  // Telegram account linking
+  telegramStatus: () => api.get<{ linked: boolean }>('/notifications/telegram/status', true),
+  telegramLink: () =>
+    api.post<{ code: string; deepLink: string | null; botConfigured: boolean }>(
+      '/notifications/telegram/link',
+      undefined,
+      true,
+    ),
+  telegramUnlink: () => api.post<{ linked: boolean }>('/notifications/telegram/unlink', undefined, true),
+  telegramMockLink: (code: string) =>
+    api.post<{ linked: boolean }>('/notifications/telegram/mock-link', { code }),
   confirmPayment: (paymentId: string) =>
     api.post<BookingDTO>(`/admin/payments/${paymentId}/confirm`, undefined, true),
   setBookingStatus: (id: string, status: string) =>

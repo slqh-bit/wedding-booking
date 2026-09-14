@@ -54,6 +54,8 @@ const envSchema = z.object({
   // Telegram Bot API
   TELEGRAM_BOT_TOKEN: z.string().default(''),
   TELEGRAM_OPS_CHAT_ID: z.string().default(''),
+  TELEGRAM_BOT_USERNAME: z.string().default(''),
+  TELEGRAM_WEBHOOK_SECRET: z.string().default(''),
 });
 
 // In test we don't require real secrets; provide safe fallbacks.

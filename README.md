@@ -155,10 +155,15 @@ delivery failure never breaks a booking) and deduped per channel by a unique `(b
 constraint, so a retried webhook can't re-send. Admins see every message + status under
 **Admin → Notifications**.
 
+**Telegram linking** — customers link their Telegram from **My account**: the app issues a one-time
+code and a bot deep link (`t.me/<bot>?start=<code>`); pressing Start makes the bot backend
+(`POST /notifications/telegram/webhook/<secret>`) capture the chat id and store it on the user. Without
+a configured bot, a dev **"simulate link"** button drives the same path so the flow is demoable locally.
+
 ## Roadmap
 
 - **Phase 2 (in progress)** — ✅ online payment gateway (Konnect + mock), ✅ notifications across
-  email / SMS / WhatsApp / Telegram (console + real providers). Next: Flouci / D17 adapters,
-  customer Telegram-linking UI, invoice PDF export.
+  email / SMS / WhatsApp / Telegram (console + real providers), ✅ customer Telegram-linking flow.
+  Next: Flouci / D17 adapters, invoice PDF export.
 - **Phase 3** — vendor onboarding + per-vendor dashboards, commissions/payouts, reviews, search,
   promo packages ("الباقات").

@@ -107,6 +107,19 @@
     "notifType": { "BOOKING_RECEIVED": "Réservation reçue", "PAYMENT_CONFIRMED": "Paiement confirmé" },
     "notifStatus": { "SENT": "Envoyée", "PENDING": "En attente", "FAILED": "Échec" }
   },
+  "telegram": {
+    "title": "Notifications Telegram",
+    "desc": "Liez votre Telegram pour recevoir instantanément les confirmations de réservation et de paiement.",
+    "linked": "Lié ✓",
+    "notLinked": "Non lié",
+    "link": "Lier Telegram",
+    "unlink": "Délier",
+    "openBot": "Ouvrir le bot dans Telegram",
+    "waiting": "En attente de la liaison…",
+    "simulate": "Simuler la liaison (dév)",
+    "linkedToast": "Telegram lié avec succès",
+    "codeHint": "Envoyez /start avec ce code au bot :"
+  },
   "payment": {
     "payOnline": "Payer l’acompte en ligne",
     "payByTransfer": "Payer par virement bancaire",

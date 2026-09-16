@@ -9,6 +9,7 @@ interface AuthState {
   loading: boolean;
   login: (email: string, password: string) => Promise<UserDTO>;
   register: (body: Record<string, unknown>) => Promise<UserDTO>;
+  registerVendor: (body: Record<string, unknown>) => Promise<UserDTO>;
   logout: () => void;
 }
 
@@ -48,13 +49,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return res.user;
   };
 
+  const registerVendor = async (body: Record<string, unknown>) => {
+    const res = await endpoints.registerVendor(body);
+    tokenStore.set(res.accessToken, res.refreshToken);
+    setUser(res.user);
+    return res.user;
+  };
+
   const logout = () => {
     tokenStore.clear();
     setUser(null);
   };
 
   const value = useMemo<AuthState>(
-    () => ({ user, loading, login, register, logout }),
+    () => ({ user, loading, login, register, registerVendor, logout }),
     [user, loading],
   );
 

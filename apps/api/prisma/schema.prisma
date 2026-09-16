@@ -89,6 +89,18 @@ enum NotificationStatus {
   FAILED
 }
 
+enum VendorStatus {
+  PENDING
+  APPROVED
+  SUSPENDED
+}
+
+enum ModerationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 // ── Models ───────────────────────────────────────────────
 model User {
   id           String   @id @default(cuid())
@@ -118,15 +130,21 @@ model User {
 /// In MVP every offering belongs to one seeded platform-owned vendor.
 /// Phase 3 attaches real vendor accounts via `userId`.
 model Vendor {
-  id              String   @id @default(cuid())
-  userId          String?  @unique
+  id              String       @id @default(cuid())
+  userId          String?      @unique
   name            String
   description     String?
   logoUrl         String?
   phone           String?
-  isPlatformOwned Boolean  @default(false)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  email           String?
+  city            String?
+  isPlatformOwned Boolean      @default(false)
+  status          VendorStatus @default(PENDING)
+  /// Platform commission fraction on this vendor's items (0.100 = 10%). Read by
+  /// the Phase-3 payout ledger.
+  commissionRate  Decimal      @default(0.100) @db.Decimal(4, 3)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
 
   owner     User?             @relation("VendorOwner", fields: [userId], references: [id])
   offerings ServiceOffering[]
@@ -147,6 +165,9 @@ model ServiceOffering {
   attributes  Json            @default("{}")
   imageUrls   String[]        @default([])
   isActive    Boolean         @default(true)
+  /// Vendor-created offerings start PENDING and are hidden from the public
+  /// catalog until an admin approves them. Platform offerings are APPROVED.
+  moderationStatus ModerationStatus @default(PENDING)
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
 
@@ -156,6 +177,7 @@ model ServiceOffering {
 
   @@index([category, isActive])
   @@index([vendorId])
+  @@index([moderationStatus])
 }
 
 /// Date-based availability for DATE_BOUND categories. A confirmed booking

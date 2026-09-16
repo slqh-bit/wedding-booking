@@ -87,3 +87,57 @@ export const recordPaymentSchema = z.object({
   reference: z.string().max(120).optional(),
 });
 export type RecordPaymentInput = z.infer<typeof recordPaymentSchema>;
+
+// ── Vendors (Phase 3) ───────────────────────────────────
+export const vendorStatusSchema = z.enum(['PENDING', 'APPROVED', 'SUSPENDED']);
+export const moderationStatusSchema = z.enum(['PENDING', 'APPROVED', 'REJECTED']);
+
+/** Public vendor self-registration: a user account + a vendor profile. */
+export const vendorRegisterSchema = z.object({
+  fullName: z.string().trim().min(2).max(120),
+  email: z.string().trim().email().toLowerCase(),
+  phone: phoneSchema,
+  password: z.string().min(8).max(128),
+  locale: localeSchema.optional(),
+  vendorName: z.string().trim().min(2).max(120),
+  description: z.string().max(1000).optional(),
+  city: z.string().max(120).optional(),
+});
+export type VendorRegisterInput = z.infer<typeof vendorRegisterSchema>;
+
+/** Vendor edits its own profile. */
+export const vendorProfileSchema = z.object({
+  name: z.string().trim().min(2).max(120).optional(),
+  description: z.string().max(1000).optional(),
+  phone: phoneSchema.optional(),
+  email: z.string().trim().email().toLowerCase().optional(),
+  city: z.string().max(120).optional(),
+  logoUrl: z.string().url().optional(),
+});
+export type VendorProfileInput = z.infer<typeof vendorProfileSchema>;
+
+/** Admin creates a vendor (approved immediately); optional linked login. */
+export const adminVendorCreateSchema = z.object({
+  vendorName: z.string().trim().min(2).max(120),
+  description: z.string().max(1000).optional(),
+  phone: phoneSchema.optional(),
+  city: z.string().max(120).optional(),
+  commissionRate: z.number().min(0).max(1).optional(),
+  owner: z
+    .object({
+      fullName: z.string().trim().min(2).max(120),
+      email: z.string().trim().email().toLowerCase(),
+      phone: phoneSchema,
+      password: z.string().min(8).max(128),
+    })
+    .optional(),
+});
+export type AdminVendorCreateInput = z.infer<typeof adminVendorCreateSchema>;
+
+/** Availability generation for an owned offering (a date range to open/close). */
+export const availabilityRangeSchema = z.object({
+  from: eventDateSchema,
+  to: eventDateSchema,
+  open: z.boolean().default(true),
+});
+export type AvailabilityRangeInput = z.infer<typeof availabilityRangeSchema>;

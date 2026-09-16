@@ -1,9 +1,12 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import {
+  adminVendorCreateSchema,
+  moderationStatusSchema,
   offeringInputSchema,
   offeringUpdateSchema,
   recordPaymentSchema,
+  vendorStatusSchema,
 } from '@hafalati/shared';
 import { asyncHandler } from '../http/errors.js';
 import { param } from '../http/params.js';
@@ -18,8 +21,44 @@ adminRouter.use(requireAuth, requireRole('ADMIN'));
 // ── Offerings ───────────────────────────────────────────
 adminRouter.get(
   '/offerings',
-  asyncHandler(async (_req, res) => {
-    res.json({ data: await admin.listAllOfferings() });
+  asyncHandler(async (req, res) => {
+    const m = req.query.moderationStatus
+      ? moderationStatusSchema.parse(req.query.moderationStatus)
+      : undefined;
+    res.json({ data: await admin.listAllOfferings(m) });
+  }),
+);
+
+adminRouter.patch(
+  '/offerings/:id/moderation',
+  validateBody(z.object({ status: moderationStatusSchema })),
+  asyncHandler(async (req, res) => {
+    res.json(await admin.setOfferingModeration(param(req, 'id'), req.body.status));
+  }),
+);
+
+// ── Vendors ─────────────────────────────────────────────
+adminRouter.get(
+  '/vendors',
+  asyncHandler(async (req, res) => {
+    const s = req.query.status ? vendorStatusSchema.parse(req.query.status) : undefined;
+    res.json({ data: await admin.listVendors(s) });
+  }),
+);
+
+adminRouter.post(
+  '/vendors',
+  validateBody(adminVendorCreateSchema),
+  asyncHandler(async (req, res) => {
+    res.status(201).json(await admin.createVendor(req.body));
+  }),
+);
+
+adminRouter.patch(
+  '/vendors/:id/status',
+  validateBody(z.object({ status: vendorStatusSchema })),
+  asyncHandler(async (req, res) => {
+    res.json(await admin.setVendorStatus(param(req, 'id'), req.body.status));
   }),
 );
 

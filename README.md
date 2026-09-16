@@ -169,5 +169,18 @@ a configured bot, a dev **"simulate link"** button drives the same path so the f
 
 - **Phase 2** — ✅ online payment gateways (mock / Konnect / Flouci / D17), ✅ notifications across
   email / SMS / WhatsApp / Telegram, ✅ customer Telegram-linking, ✅ invoice PDF export.
-- **Phase 3** — vendor onboarding + per-vendor dashboards, commissions/payouts, reviews, search,
-  promo packages ("الباقات").
+- **Phase 3 (in progress)** — ✅ vendor accounts (hybrid onboarding: self-service + admin-created),
+  per-vendor dashboard (own offerings, availability, bookings, stats), admin moderation, and a gated
+  public catalog (only approved offerings from approved vendors are visible). Next: commission/payout
+  ledger, reviews & ratings, public search & filtering, promo packages ("الباقات").
+
+## Vendor marketplace (Phase 3)
+
+The `Vendor` model, `VENDOR` role, and `ServiceOffering.vendorId` were built in from day one; Phase 3
+activates them. Vendors register at **`/vendor/register`** (or an admin creates them). A vendor's account
+starts **PENDING** and their offerings start **PENDING moderation**; an offering is only shown in the
+public wizard when it is active, **approved**, and its vendor is platform-owned or **approved** — so a
+suspended vendor or an unmoderated offering silently drops out. Admins approve/suspend vendors and
+approve/reject offerings under **Admin → Vendors / Moderation**. Each vendor has a `commissionRate` (the
+hook the payout-ledger slice will read). Seeded demo logins: `vendor@hafalati.tn` (approved) and
+`vendor2@hafalati.tn` (pending), password `Vendor1234`.

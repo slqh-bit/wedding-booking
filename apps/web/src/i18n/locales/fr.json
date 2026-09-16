@@ -108,6 +108,58 @@
     "notifType": { "BOOKING_RECEIVED": "Réservation reçue", "PAYMENT_CONFIRMED": "Paiement confirmé" },
     "notifStatus": { "SENT": "Envoyée", "PENDING": "En attente", "FAILED": "Échec" }
   },
+  "vendor": {
+    "become": "Devenir prestataire",
+    "registerTitle": "Inscription prestataire",
+    "vendorName": "Nom de l’activité",
+    "description": "Brève description",
+    "city": "Ville",
+    "submit": "Créer le compte prestataire",
+    "dashboard": "Espace vendeur",
+    "navLink": "Espace vendeur",
+    "pendingBanner": "Votre compte est en cours de validation. Vos services ne seront visibles qu’après approbation.",
+    "suspendedBanner": "Votre compte est suspendu. Contactez l’administration.",
+    "tabs": { "offerings": "Mes services", "bookings": "Réservations", "stats": "Statistiques", "profile": "Profil" },
+    "addOffering": "Ajouter un service",
+    "editOffering": "Modifier le service",
+    "noOfferings": "Aucun service pour l’instant.",
+    "name": "Nom",
+    "price": "Prix (DT)",
+    "category": "Catégorie",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "deleteConfirm": "Supprimer ce service ?",
+    "openAvailability": "Ouvrir les dates (90 j)",
+    "availabilityOpened": "Dates ouvertes",
+    "noBookings": "Aucune réservation pour vos services.",
+    "grossRevenue": "Revenu brut",
+    "commission": "Commission plateforme",
+    "netRevenue": "Revenu net",
+    "bookingsCount": "Réservations",
+    "saved": "Enregistré"
+  },
+  "moderation": {
+    "PENDING": "En attente",
+    "APPROVED": "Approuvé",
+    "REJECTED": "Refusé"
+  },
+  "vendorStatus": {
+    "PENDING": "En attente",
+    "APPROVED": "Approuvé",
+    "SUSPENDED": "Suspendu"
+  },
+  "adminMarket": {
+    "vendors": "Prestataires",
+    "moderation": "Modération",
+    "approve": "Approuver",
+    "reject": "Refuser",
+    "suspend": "Suspendre",
+    "reinstate": "Réactiver",
+    "commission": "Commission",
+    "noPending": "Rien à modérer.",
+    "by": "Prestataire"
+  },
   "telegram": {
     "title": "Notifications Telegram",
     "desc": "Liez votre Telegram pour recevoir instantanément les confirmations de réservation et de paiement.",

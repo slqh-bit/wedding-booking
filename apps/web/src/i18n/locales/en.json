@@ -108,6 +108,58 @@
     "notifType": { "BOOKING_RECEIVED": "Booking received", "PAYMENT_CONFIRMED": "Payment confirmed" },
     "notifStatus": { "SENT": "Sent", "PENDING": "Pending", "FAILED": "Failed" }
   },
+  "vendor": {
+    "become": "Become a vendor",
+    "registerTitle": "Vendor sign-up",
+    "vendorName": "Business name",
+    "description": "Short description",
+    "city": "City",
+    "submit": "Create vendor account",
+    "dashboard": "Vendor dashboard",
+    "navLink": "Vendor space",
+    "pendingBanner": "Your account is under review. Your services stay hidden from customers until approved.",
+    "suspendedBanner": "Your account is suspended. Please contact the admin.",
+    "tabs": { "offerings": "My services", "bookings": "Bookings", "stats": "Stats", "profile": "Profile" },
+    "addOffering": "Add a service",
+    "editOffering": "Edit service",
+    "noOfferings": "No services yet.",
+    "name": "Name",
+    "price": "Price (TND)",
+    "category": "Category",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "deleteConfirm": "Delete this service?",
+    "openAvailability": "Open dates (90 days)",
+    "availabilityOpened": "Dates opened",
+    "noBookings": "No bookings for your services yet.",
+    "grossRevenue": "Gross revenue",
+    "commission": "Platform commission",
+    "netRevenue": "Net revenue",
+    "bookingsCount": "Bookings",
+    "saved": "Saved"
+  },
+  "moderation": {
+    "PENDING": "Pending",
+    "APPROVED": "Approved",
+    "REJECTED": "Rejected"
+  },
+  "vendorStatus": {
+    "PENDING": "Pending",
+    "APPROVED": "Approved",
+    "SUSPENDED": "Suspended"
+  },
+  "adminMarket": {
+    "vendors": "Vendors",
+    "moderation": "Moderation",
+    "approve": "Approve",
+    "reject": "Reject",
+    "suspend": "Suspend",
+    "reinstate": "Reinstate",
+    "commission": "Commission",
+    "noPending": "Nothing to moderate.",
+    "by": "Vendor"
+  },
   "telegram": {
     "title": "Telegram notifications",
     "desc": "Link your Telegram to get booking and payment confirmations instantly.",

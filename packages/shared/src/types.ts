@@ -39,7 +39,23 @@ export interface OfferingDTO {
   attributes: Record<string, unknown>;
   imageUrls: string[];
   isActive: boolean;
+  moderationStatus: 'PENDING' | 'APPROVED' | 'REJECTED';
   vendorName: string;
+}
+
+export interface VendorDTO {
+  id: string;
+  name: string;
+  description: string | null;
+  logoUrl: string | null;
+  phone: string | null;
+  email: string | null;
+  city: string | null;
+  status: 'PENDING' | 'APPROVED' | 'SUSPENDED';
+  isPlatformOwned: boolean;
+  commissionRate: number;
+  offeringCount?: number;
+  createdAt?: string;
 }
 
 export interface CategoryDTO {

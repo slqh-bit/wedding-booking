@@ -16,6 +16,7 @@ import { settlePayment } from '../payments/payment.service.js';
 import { earningsForVendorId, payoutSummaries, settleVendorPayout } from '../vendor/earnings.js';
 
 export { listNotifications } from '../notifications/notification.service.js';
+export { listReviews, setReviewStatus } from '../reviews/reviews.service.js';
 
 // ── Offerings CRUD ──────────────────────────────────────
 async function platformVendorId(): Promise<string> {
@@ -30,7 +31,7 @@ export async function listAllOfferings(moderationStatus?: ModerationStatus) {
     include: { vendor: { select: { name: true } } },
     orderBy: [{ category: 'asc' }, { basePrice: 'asc' }],
   });
-  return offerings.map(toOfferingDTO);
+  return offerings.map((o) => toOfferingDTO(o));
 }
 
 // ── Vendors + moderation (Phase 3) ──────────────────────

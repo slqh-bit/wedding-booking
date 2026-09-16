@@ -162,10 +162,28 @@
     "booking": "Réservation",
     "status": "Statut"
   },
+  "review": {
+    "title": "Avis",
+    "rate": "Noter le service",
+    "edit": "Modifier l’avis",
+    "yourRating": "Votre note",
+    "comment": "Votre commentaire (facultatif)",
+    "commentPlaceholder": "Partagez votre expérience…",
+    "submit": "Envoyer l’avis",
+    "thanks": "Merci pour votre avis !",
+    "empty": "Aucun avis pour l’instant.",
+    "hide": "Masquer",
+    "publish": "Publier",
+    "PUBLISHED": "Publié",
+    "HIDDEN": "Masqué",
+    "by": "par",
+    "reviewsCount": "avis"
+  },
   "adminMarket": {
     "vendors": "Prestataires",
     "moderation": "Modération",
     "payouts": "Paiements",
+    "reviews": "Avis",
     "approve": "Approuver",
     "reject": "Refuser",
     "suspend": "Suspendre",

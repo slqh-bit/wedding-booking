@@ -162,10 +162,28 @@
     "booking": "Booking",
     "status": "Status"
   },
+  "review": {
+    "title": "Reviews",
+    "rate": "Rate the service",
+    "edit": "Edit review",
+    "yourRating": "Your rating",
+    "comment": "Your comment (optional)",
+    "commentPlaceholder": "Share your experience…",
+    "submit": "Submit review",
+    "thanks": "Thanks for your review!",
+    "empty": "No reviews yet.",
+    "hide": "Hide",
+    "publish": "Publish",
+    "PUBLISHED": "Published",
+    "HIDDEN": "Hidden",
+    "by": "by",
+    "reviewsCount": "reviews"
+  },
   "adminMarket": {
     "vendors": "Vendors",
     "moderation": "Moderation",
     "payouts": "Payouts",
+    "reviews": "Reviews",
     "approve": "Approve",
     "reject": "Reject",
     "suspend": "Suspend",

@@ -7,6 +7,7 @@ import type {
   NotificationDTO,
   OfferingDTO,
   PayoutSummaryDTO,
+  ReviewDTO,
   VendorDTO,
   VendorEarningsResponse,
 } from '@hafalati/shared';
@@ -112,6 +113,19 @@ export const endpoints = {
   adminPayouts: () => api.get<{ data: PayoutSummaryDTO[] }>('/admin/payouts', true).then((r) => r.data),
   settleVendorPayout: (vendorId: string) =>
     api.post<VendorEarningsResponse>(`/admin/payouts/${vendorId}/settle`, undefined, true),
+
+  // Reviews & ratings (Phase 3 slice 3)
+  offeringReviews: (offeringId: string) =>
+    api.get<{ data: ReviewDTO[] }>(`/offerings/${offeringId}/reviews`).then((r) => r.data),
+  myReviews: () => api.get<{ data: ReviewDTO[] }>('/reviews/mine', true).then((r) => r.data),
+  submitReview: (body: { offeringId: string; rating: number; comment?: string }) =>
+    api.post<ReviewDTO>('/reviews', body, true),
+  adminReviews: (status?: string) =>
+    api
+      .get<{ data: ReviewDTO[] }>(`/admin/reviews${status ? `?status=${status}` : ''}`, true)
+      .then((r) => r.data),
+  setReviewStatus: (id: string, status: string) =>
+    api.patch<ReviewDTO>(`/admin/reviews/${id}/status`, { status }, true),
 };
 
 export interface VendorBooking {
@@ -132,6 +146,8 @@ export interface VendorStats {
   grossRevenue: number;
   estimatedCommission: number;
   estimatedNet: number;
+  ratingAvg: number;
+  ratingCount: number;
 }
 
 export interface AdminStats {

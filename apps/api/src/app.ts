@@ -11,6 +11,7 @@ import { bookingsRouter } from './bookings/bookings.routes.js';
 import { paymentsRouter } from './payments/payments.routes.js';
 import { notificationsRouter } from './notifications/notifications.routes.js';
 import { vendorPublicRouter, vendorRouter } from './vendor/vendor.routes.js';
+import { reviewsRouter } from './reviews/reviews.routes.js';
 import { adminRouter } from './admin/admin.routes.js';
 
 export function createApp(): Express {
@@ -53,6 +54,7 @@ export function createApp(): Express {
   app.use('/api/v1/notifications', notificationsRouter);
   app.use('/api/v1/vendors', vendorPublicRouter);
   app.use('/api/v1/vendor', vendorRouter);
+  app.use('/api/v1/reviews', reviewsRouter);
   app.use('/api/v1/admin', adminRouter);
 
   app.use((_req, res) => {

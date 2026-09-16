@@ -10,6 +10,7 @@ import { AdminNotifications } from './AdminNotifications';
 import { AdminVendors } from './AdminVendors';
 import { AdminModeration } from './AdminModeration';
 import { AdminPayouts } from './AdminPayouts';
+import { AdminReviews } from './AdminReviews';
 
 type Tab =
   | 'dashboard'
@@ -18,6 +19,7 @@ type Tab =
   | 'vendors'
   | 'moderation'
   | 'payouts'
+  | 'reviews'
   | 'notifications';
 
 export function AdminDashboard() {
@@ -32,6 +34,7 @@ export function AdminDashboard() {
     { id: 'vendors', label: t('adminMarket.vendors') },
     { id: 'moderation', label: t('adminMarket.moderation') },
     { id: 'payouts', label: t('adminMarket.payouts') },
+    { id: 'reviews', label: t('adminMarket.reviews') },
     { id: 'notifications', label: t('admin.notifications') },
   ];
 
@@ -61,6 +64,7 @@ export function AdminDashboard() {
       {tab === 'vendors' && <AdminVendors />}
       {tab === 'moderation' && <AdminModeration />}
       {tab === 'payouts' && <AdminPayouts />}
+      {tab === 'reviews' && <AdminReviews />}
       {tab === 'notifications' && <AdminNotifications />}
     </div>
   );

@@ -3,6 +3,7 @@ import type { Prisma } from '@prisma/client';
 import { prisma } from '../db.js';
 import { AppError } from '../http/errors.js';
 import { toOfferingDTO } from '../http/serialize.js';
+import { offeringRatings } from '../reviews/reviews.service.js';
 
 /**
  * The single visibility rule for the public catalog: an offering shows only
@@ -42,7 +43,8 @@ export async function listOfferings(category?: ServiceCategory) {
     include: { vendor: { select: { name: true } } },
     orderBy: { basePrice: 'asc' },
   });
-  return offerings.map(toOfferingDTO);
+  const ratings = await offeringRatings(offerings.map((o) => o.id));
+  return offerings.map((o) => toOfferingDTO(o, ratings.get(o.id)));
 }
 
 export async function getOffering(id: string) {
@@ -53,7 +55,8 @@ export async function getOffering(id: string) {
   if (!offering) {
     throw AppError.notFound('offering_not_found', 'Offering not found');
   }
-  return toOfferingDTO(offering);
+  const ratings = await offeringRatings([offering.id]);
+  return toOfferingDTO(offering, ratings.get(offering.id));
 }
 
 /** Availability for a given month (YYYY-MM) for a date-bound offering. */

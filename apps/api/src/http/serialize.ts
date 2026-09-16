@@ -6,6 +6,7 @@ import {
   type LocalizedString,
   type OfferingDTO,
   type PaymentDTO,
+  type ReviewDTO,
   type ServiceCategory,
   type UserDTO,
   type VendorDTO,
@@ -41,19 +42,22 @@ export function toUserDTO(u: {
   };
 }
 
-export function toOfferingDTO(o: {
-  id: string;
-  category: string;
-  name: unknown;
-  description: unknown;
-  basePrice: DecimalLike;
-  emoji: string;
-  attributes: unknown;
-  imageUrls: string[];
-  isActive: boolean;
-  moderationStatus?: string;
-  vendor?: { name: string } | null;
-}): OfferingDTO {
+export function toOfferingDTO(
+  o: {
+    id: string;
+    category: string;
+    name: unknown;
+    description: unknown;
+    basePrice: DecimalLike;
+    emoji: string;
+    attributes: unknown;
+    imageUrls: string[];
+    isActive: boolean;
+    moderationStatus?: string;
+    vendor?: { name: string } | null;
+  },
+  rating?: { avg: number; count: number },
+): OfferingDTO {
   return {
     id: o.id,
     category: o.category as ServiceCategory,
@@ -66,6 +70,8 @@ export function toOfferingDTO(o: {
     isActive: o.isActive,
     moderationStatus: (o.moderationStatus ?? 'APPROVED') as OfferingDTO['moderationStatus'],
     vendorName: o.vendor?.name ?? '',
+    ratingAvg: rating?.avg ?? 0,
+    ratingCount: rating?.count ?? 0,
   };
 }
 
@@ -96,6 +102,35 @@ export function toVendorDTO(v: {
     commissionRate: decToNum(v.commissionRate),
     offeringCount: v._count?.offerings,
     createdAt: v.createdAt?.toISOString(),
+  };
+}
+
+/** Show only the reviewer's first name publicly (privacy). */
+function firstName(full: string): string {
+  return full.trim().split(/\s+/)[0] ?? full;
+}
+
+export function toReviewDTO(r: {
+  id: string;
+  offeringId: string;
+  bookingId: string;
+  rating: number;
+  comment: string | null;
+  status: string;
+  createdAt: Date;
+  user?: { fullName: string } | null;
+  offering?: { name: unknown } | null;
+}): ReviewDTO {
+  return {
+    id: r.id,
+    offeringId: r.offeringId,
+    bookingId: r.bookingId,
+    rating: r.rating,
+    comment: r.comment,
+    status: r.status as ReviewDTO['status'],
+    authorName: r.user ? firstName(r.user.fullName) : '',
+    offeringName: asLocalized(r.offering?.name),
+    createdAt: r.createdAt.toISOString(),
   };
 }
 

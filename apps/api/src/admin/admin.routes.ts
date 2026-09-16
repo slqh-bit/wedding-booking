@@ -6,6 +6,7 @@ import {
   offeringInputSchema,
   offeringUpdateSchema,
   recordPaymentSchema,
+  reviewStatusSchema,
   vendorStatusSchema,
 } from '@hafalati/shared';
 import { asyncHandler } from '../http/errors.js';
@@ -56,6 +57,23 @@ adminRouter.post(
   '/payouts/:id/settle',
   asyncHandler(async (req, res) => {
     res.json(await admin.settlePayout(param(req, 'id')));
+  }),
+);
+
+// ── Reviews (moderation) ────────────────────────────────
+adminRouter.get(
+  '/reviews',
+  asyncHandler(async (req, res) => {
+    const s = req.query.status ? reviewStatusSchema.parse(req.query.status) : undefined;
+    res.json({ data: await admin.listReviews(s) });
+  }),
+);
+
+adminRouter.patch(
+  '/reviews/:id/status',
+  validateBody(z.object({ status: reviewStatusSchema })),
+  asyncHandler(async (req, res) => {
+    res.json(await admin.setReviewStatus(param(req, 'id'), req.body.status));
   }),
 );
 

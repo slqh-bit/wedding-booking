@@ -10,6 +10,8 @@ import { Register } from './pages/Register';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { PaymentReturn } from './pages/payment/PaymentReturn';
 import { MockCheckout } from './pages/payment/MockCheckout';
+import { VendorRegister } from './pages/VendorRegister';
+import { VendorDashboard } from './pages/vendor/VendorDashboard';
 
 export function App() {
   return (
@@ -22,6 +24,15 @@ export function App() {
         <Route path="payment/mock/:ref" element={<MockCheckout />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
+        <Route path="vendor/register" element={<VendorRegister />} />
+        <Route
+          path="vendor"
+          element={
+            <ProtectedRoute vendorOnly>
+              <VendorDashboard />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="account"
           element={

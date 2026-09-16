@@ -157,6 +157,7 @@ async function main() {
       description: 'منصّة تنظيم الحفلات والمناسبات',
       phone: '+21697580081',
       isPlatformOwned: true,
+      status: 'APPROVED',
     },
   });
 
@@ -181,6 +182,7 @@ async function main() {
           attributes: item.attributes as Prisma.InputJsonValue,
           imageUrls: [],
           isActive: true,
+          moderationStatus: 'APPROVED',
         },
       });
       offeringCount += 1;
@@ -196,10 +198,110 @@ async function main() {
     }
   }
 
+  // ── Demo marketplace vendors (Phase 3) ──────────────────
+  const vendorPassword = await argon2.hash('Vendor1234');
+
+  async function makeVendor(opts: {
+    email: string;
+    fullName: string;
+    phone: string;
+    vendorName: string;
+    description: string;
+    city: string;
+    status: 'PENDING' | 'APPROVED';
+    offerings: { category: ServiceCategory; item: SeedOffering; moderation: 'PENDING' | 'APPROVED' }[];
+  }) {
+    const user = await prisma.user.create({
+      data: {
+        email: opts.email,
+        phone: opts.phone,
+        passwordHash: vendorPassword,
+        fullName: opts.fullName,
+        role: 'VENDOR',
+        locale: 'ar',
+      },
+    });
+    const v = await prisma.vendor.create({
+      data: {
+        userId: user.id,
+        name: opts.vendorName,
+        description: opts.description,
+        phone: opts.phone,
+        email: opts.email,
+        city: opts.city,
+        status: opts.status,
+      },
+    });
+    for (const o of opts.offerings) {
+      const off = await prisma.serviceOffering.create({
+        data: {
+          vendorId: v.id,
+          category: o.category,
+          name: o.item.name as unknown as Prisma.InputJsonValue,
+          description: o.item.description as unknown as Prisma.InputJsonValue,
+          basePrice: new Prisma.Decimal(o.item.price),
+          emoji: o.item.emoji,
+          attributes: o.item.attributes as Prisma.InputJsonValue,
+          isActive: true,
+          moderationStatus: o.moderation,
+        },
+      });
+      if (isDateBound(o.category) && o.moderation === 'APPROVED') {
+        await prisma.availability.createMany({
+          data: Array.from({ length: AVAILABILITY_DAYS }, (_, i) => ({
+            offeringId: off.id,
+            date: addDays(startOfToday, i + 1),
+            status: 'AVAILABLE' as const,
+          })),
+        });
+      }
+    }
+  }
+
+  await makeVendor({
+    email: 'vendor@hafalati.tn',
+    fullName: 'استوديو الأناقة',
+    phone: '+21650000001',
+    vendorName: 'استوديو الأناقة للتصوير',
+    description: 'تصوير احترافي للأعراس والمناسبات',
+    city: 'القصرين',
+    status: 'APPROVED',
+    offerings: [
+      {
+        category: ServiceCategory.PHOTOGRAPHY,
+        moderation: 'APPROVED',
+        item: { emoji: '📷', price: 1400, attributes: { style: 'سينمائي' }, name: { ar: 'باقة سينمائية', fr: 'Pack Cinéma', en: 'Cinematic Pack' }, description: { ar: 'فيديو سينمائي + صور', fr: 'Vidéo cinéma + photos', en: 'Cinematic video + photos' } },
+      },
+      {
+        category: ServiceCategory.BEAUTY,
+        moderation: 'APPROVED',
+        item: { emoji: '💄', price: 900, attributes: { includes: 'شعر + مكياج' }, name: { ar: 'مكياج عروس فاخر', fr: 'Maquillage Mariée', en: 'Bridal Makeup' }, description: { ar: 'إطلالة عروس متكاملة', fr: 'Look mariée complet', en: 'Complete bridal look' } },
+      },
+    ],
+  });
+
+  await makeVendor({
+    email: 'vendor2@hafalati.tn',
+    fullName: 'لمسات فاخرة',
+    phone: '+21650000002',
+    vendorName: 'لمسات فاخرة للديكور',
+    description: 'ديكورات وتنسيق قاعات',
+    city: 'سبيطلة',
+    status: 'PENDING',
+    offerings: [
+      {
+        category: ServiceCategory.DECOR,
+        moderation: 'PENDING',
+        item: { emoji: '✨', price: 2600, attributes: { theme: 'فاخر' }, name: { ar: 'ديكور ملكي', fr: 'Décor Royal', en: 'Royal Decor' }, description: { ar: 'تصميم فخم بإضاءة', fr: 'Design luxueux avec éclairage', en: 'Luxurious lit design' } },
+      },
+    ],
+  });
+
   console.log(
-    `✅ Seed complete: ${offeringCount} offerings across ${Object.keys(CATALOG).length} categories.`,
+    `✅ Seed complete: ${offeringCount} platform offerings + 2 demo vendors across ${Object.keys(CATALOG).length} categories.`,
   );
   console.log('   Admin:    admin@hafalati.tn / Admin1234');
+  console.log('   Vendor:   vendor@hafalati.tn / Vendor1234 (approved), vendor2@hafalati.tn / Vendor1234 (pending)');
   console.log('   Customer: client@hafalati.tn / Customer1234');
   void CATEGORY_META;
   void AvailabilityMode;

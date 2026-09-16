@@ -1,12 +1,25 @@
 import { CATEGORY_META, CATEGORY_ORDER, type CategoryDTO, type ServiceCategory } from '@hafalati/shared';
+import type { Prisma } from '@prisma/client';
 import { prisma } from '../db.js';
 import { AppError } from '../http/errors.js';
 import { toOfferingDTO } from '../http/serialize.js';
 
+/**
+ * The single visibility rule for the public catalog: an offering shows only
+ * when it is active, moderation-approved, and its vendor is platform-owned or
+ * an approved vendor. Reused across every public query so a suspended vendor or
+ * a pending offering silently drops out of the wizard.
+ */
+export const PUBLIC_OFFERING_WHERE = {
+  isActive: true,
+  moderationStatus: 'APPROVED',
+  vendor: { OR: [{ isPlatformOwned: true }, { status: 'APPROVED' }] },
+} satisfies Prisma.ServiceOfferingWhereInput;
+
 export async function listCategories(): Promise<CategoryDTO[]> {
   const counts = await prisma.serviceOffering.groupBy({
     by: ['category'],
-    where: { isActive: true },
+    where: PUBLIC_OFFERING_WHERE,
     _count: { _all: true },
   });
   const countMap = new Map(counts.map((c) => [c.category, c._count._all]));
@@ -25,7 +38,7 @@ export async function listCategories(): Promise<CategoryDTO[]> {
 
 export async function listOfferings(category?: ServiceCategory) {
   const offerings = await prisma.serviceOffering.findMany({
-    where: { isActive: true, ...(category ? { category } : {}) },
+    where: { ...PUBLIC_OFFERING_WHERE, ...(category ? { category } : {}) },
     include: { vendor: { select: { name: true } } },
     orderBy: { basePrice: 'asc' },
   });
@@ -33,11 +46,11 @@ export async function listOfferings(category?: ServiceCategory) {
 }
 
 export async function getOffering(id: string) {
-  const offering = await prisma.serviceOffering.findUnique({
-    where: { id },
+  const offering = await prisma.serviceOffering.findFirst({
+    where: { id, ...PUBLIC_OFFERING_WHERE },
     include: { vendor: { select: { name: true } } },
   });
-  if (!offering || !offering.isActive) {
+  if (!offering) {
     throw AppError.notFound('offering_not_found', 'Offering not found');
   }
   return toOfferingDTO(offering);

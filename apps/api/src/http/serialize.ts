@@ -8,6 +8,7 @@ import {
   type PaymentDTO,
   type ServiceCategory,
   type UserDTO,
+  type VendorDTO,
 } from '@hafalati/shared';
 import { fiscalConfig } from '../env.js';
 
@@ -50,6 +51,7 @@ export function toOfferingDTO(o: {
   attributes: unknown;
   imageUrls: string[];
   isActive: boolean;
+  moderationStatus?: string;
   vendor?: { name: string } | null;
 }): OfferingDTO {
   return {
@@ -62,7 +64,38 @@ export function toOfferingDTO(o: {
     attributes: (o.attributes ?? {}) as Record<string, unknown>,
     imageUrls: o.imageUrls,
     isActive: o.isActive,
+    moderationStatus: (o.moderationStatus ?? 'APPROVED') as OfferingDTO['moderationStatus'],
     vendorName: o.vendor?.name ?? '',
+  };
+}
+
+export function toVendorDTO(v: {
+  id: string;
+  name: string;
+  description: string | null;
+  logoUrl: string | null;
+  phone: string | null;
+  email: string | null;
+  city: string | null;
+  status: string;
+  isPlatformOwned: boolean;
+  commissionRate: DecimalLike;
+  createdAt?: Date;
+  _count?: { offerings: number };
+}): VendorDTO {
+  return {
+    id: v.id,
+    name: v.name,
+    description: v.description,
+    logoUrl: v.logoUrl,
+    phone: v.phone,
+    email: v.email,
+    city: v.city,
+    status: v.status as VendorDTO['status'],
+    isPlatformOwned: v.isPlatformOwned,
+    commissionRate: decToNum(v.commissionRate),
+    offeringCount: v._count?.offerings,
+    createdAt: v.createdAt?.toISOString(),
   };
 }
 

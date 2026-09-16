@@ -36,9 +36,19 @@ export function Layout() {
                 {t('nav.account')}
               </NavLink>
             )}
+            {user?.role === 'VENDOR' && (
+              <NavLink to="/vendor" className={navLinkClass}>
+                {t('vendor.navLink')}
+              </NavLink>
+            )}
             {user?.role === 'ADMIN' && (
               <NavLink to="/admin" className={navLinkClass}>
                 {t('nav.admin')}
+              </NavLink>
+            )}
+            {!user && (
+              <NavLink to="/vendor/register" className={navLinkClass}>
+                {t('vendor.become')}
               </NavLink>
             )}
           </nav>
@@ -78,9 +88,19 @@ export function Layout() {
                   {t('nav.account')}
                 </NavLink>
               )}
+              {user?.role === 'VENDOR' && (
+                <NavLink to="/vendor" className={navLinkClass} onClick={() => setOpen(false)}>
+                  {t('vendor.navLink')}
+                </NavLink>
+              )}
               {user?.role === 'ADMIN' && (
                 <NavLink to="/admin" className={navLinkClass} onClick={() => setOpen(false)}>
                   {t('nav.admin')}
+                </NavLink>
+              )}
+              {!user && (
+                <NavLink to="/vendor/register" className={navLinkClass} onClick={() => setOpen(false)}>
+                  {t('vendor.become')}
                 </NavLink>
               )}
               {user ? (

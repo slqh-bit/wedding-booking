@@ -6,9 +6,11 @@ import { useAuth } from '@/store/auth';
 export function ProtectedRoute({
   children,
   adminOnly = false,
+  vendorOnly = false,
 }: {
   children: ReactNode;
   adminOnly?: boolean;
+  vendorOnly?: boolean;
 }) {
   const { user, loading } = useAuth();
   const location = useLocation();
@@ -24,6 +26,9 @@ export function ProtectedRoute({
     return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
   if (adminOnly && user.role !== 'ADMIN') {
+    return <Navigate to="/" replace />;
+  }
+  if (vendorOnly && user.role !== 'VENDOR') {
     return <Navigate to="/" replace />;
   }
   return <>{children}</>;

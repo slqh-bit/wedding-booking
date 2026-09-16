@@ -1,13 +1,17 @@
+import argon2 from 'argon2';
 import { Prisma } from '@prisma/client';
 import {
+  type AdminVendorCreateInput,
   type BookingStatus,
+  type ModerationStatus,
   type OfferingInput,
   type RecordPaymentInput,
   type ServiceCategory,
+  type VendorStatus,
 } from '@hafalati/shared';
 import { prisma } from '../db.js';
 import { AppError } from '../http/errors.js';
-import { toBookingDTO, toOfferingDTO } from '../http/serialize.js';
+import { toBookingDTO, toOfferingDTO, toVendorDTO } from '../http/serialize.js';
 import { settlePayment } from '../payments/payment.service.js';
 
 export { listNotifications } from '../notifications/notification.service.js';
@@ -19,12 +23,93 @@ async function platformVendorId(): Promise<string> {
   return vendor.id;
 }
 
-export async function listAllOfferings() {
+export async function listAllOfferings(moderationStatus?: ModerationStatus) {
   const offerings = await prisma.serviceOffering.findMany({
+    where: moderationStatus ? { moderationStatus } : {},
     include: { vendor: { select: { name: true } } },
     orderBy: [{ category: 'asc' }, { basePrice: 'asc' }],
   });
   return offerings.map(toOfferingDTO);
+}
+
+// ── Vendors + moderation (Phase 3) ──────────────────────
+const vendorSelect = {
+  id: true,
+  name: true,
+  description: true,
+  logoUrl: true,
+  phone: true,
+  email: true,
+  city: true,
+  status: true,
+  isPlatformOwned: true,
+  commissionRate: true,
+  createdAt: true,
+  _count: { select: { offerings: true } },
+} satisfies Prisma.VendorSelect;
+
+export async function listVendors(status?: VendorStatus) {
+  const vendors = await prisma.vendor.findMany({
+    where: status ? { status } : {},
+    select: vendorSelect,
+    orderBy: { createdAt: 'desc' },
+  });
+  return vendors.map(toVendorDTO);
+}
+
+export async function createVendor(input: AdminVendorCreateInput) {
+  const vendor = await prisma.vendor.create({
+    data: {
+      name: input.vendorName,
+      description: input.description,
+      phone: input.phone,
+      city: input.city,
+      status: 'APPROVED', // admin-created vendors are trusted
+      ...(input.commissionRate !== undefined
+        ? { commissionRate: new Prisma.Decimal(input.commissionRate) }
+        : {}),
+      ...(input.owner
+        ? {
+            owner: {
+              create: {
+                email: input.owner.email,
+                phone: input.owner.phone,
+                fullName: input.owner.fullName,
+                passwordHash: await argon2.hash(input.owner.password),
+                role: 'VENDOR',
+              },
+            },
+          }
+        : {}),
+    },
+    select: vendorSelect,
+  });
+  return toVendorDTO(vendor);
+}
+
+export async function setVendorStatus(vendorId: string, status: VendorStatus) {
+  const vendor = await prisma.vendor.findUnique({ where: { id: vendorId } });
+  if (!vendor) throw AppError.notFound('vendor_not_found', 'Vendor not found');
+  if (vendor.isPlatformOwned) {
+    throw AppError.conflict('platform_vendor', 'The platform vendor status is fixed');
+  }
+  const updated = await prisma.vendor.update({
+    where: { id: vendorId },
+    data: { status },
+    select: vendorSelect,
+  });
+  return toVendorDTO(updated);
+}
+
+export async function setOfferingModeration(offeringId: string, status: ModerationStatus) {
+  const offering = await prisma.serviceOffering.findUnique({ where: { id: offeringId } });
+  if (!offering) throw AppError.notFound('offering_not_found', 'Offering not found');
+  const updated = await prisma.serviceOffering.update({
+    where: { id: offeringId },
+    data: { moderationStatus: status },
+    include: { vendor: { select: { name: true } } },
+  });
+  return toOfferingDTO(updated);
 }
 
 export async function createOffering(input: OfferingInput) {

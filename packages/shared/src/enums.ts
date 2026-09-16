@@ -107,6 +107,20 @@ export const NotificationStatus = {
 } as const;
 export type NotificationStatus = (typeof NotificationStatus)[keyof typeof NotificationStatus];
 
+export const VendorStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  SUSPENDED: 'SUSPENDED',
+} as const;
+export type VendorStatus = (typeof VendorStatus)[keyof typeof VendorStatus];
+
+export const ModerationStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+} as const;
+export type ModerationStatus = (typeof ModerationStatus)[keyof typeof ModerationStatus];
+
 /**
  * Whether a category is booked against a specific calendar date (services)
  * or is product-like (ordered with lead time, no hard per-date lock).

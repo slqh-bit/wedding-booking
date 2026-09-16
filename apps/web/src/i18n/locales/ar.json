@@ -108,6 +108,58 @@
     "notifType": { "BOOKING_RECEIVED": "استلام الحجز", "PAYMENT_CONFIRMED": "تأكيد الدفع" },
     "notifStatus": { "SENT": "أُرسل", "PENDING": "قيد الإرسال", "FAILED": "فشل" }
   },
+  "vendor": {
+    "become": "انضم كمزوّد خدمة",
+    "registerTitle": "تسجيل مزوّد خدمة",
+    "vendorName": "اسم النشاط",
+    "description": "وصف مختصر",
+    "city": "المدينة",
+    "submit": "إنشاء حساب المزوّد",
+    "dashboard": "لوحة المزوّد",
+    "navLink": "لوحة المزوّد",
+    "pendingBanner": "حسابك قيد المراجعة من الإدارة. خدماتك لن تظهر للعملاء حتى تتم الموافقة.",
+    "suspendedBanner": "تم تعليق حسابك. تواصل مع الإدارة.",
+    "tabs": { "offerings": "خدماتي", "bookings": "الحجوزات", "stats": "الإحصائيات", "profile": "الملف" },
+    "addOffering": "إضافة خدمة",
+    "editOffering": "تعديل الخدمة",
+    "noOfferings": "لا توجد خدمات بعد.",
+    "name": "الاسم",
+    "price": "السعر (د.ت)",
+    "category": "الصنف",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "deleteConfirm": "حذف هذه الخدمة؟",
+    "openAvailability": "فتح التواريخ (90 يوم)",
+    "availabilityOpened": "تم فتح التواريخ",
+    "noBookings": "لا توجد حجوزات لخدماتك بعد.",
+    "grossRevenue": "إجمالي الإيرادات",
+    "commission": "عمولة المنصّة",
+    "netRevenue": "صافي الإيرادات",
+    "bookingsCount": "عدد الحجوزات",
+    "saved": "تم الحفظ"
+  },
+  "moderation": {
+    "PENDING": "قيد المراجعة",
+    "APPROVED": "معتمد",
+    "REJECTED": "مرفوض"
+  },
+  "vendorStatus": {
+    "PENDING": "قيد المراجعة",
+    "APPROVED": "معتمد",
+    "SUSPENDED": "معلّق"
+  },
+  "adminMarket": {
+    "vendors": "المزوّدون",
+    "moderation": "المراجعة",
+    "approve": "اعتماد",
+    "reject": "رفض",
+    "suspend": "تعليق",
+    "reinstate": "إعادة تفعيل",
+    "commission": "العمولة",
+    "noPending": "لا توجد عناصر بانتظار المراجعة.",
+    "by": "المزوّد"
+  },
   "telegram": {
     "title": "إشعارات تيليجرام",
     "desc": "اربط حساب تيليجرام لتصلك تأكيدات الحجز والدفع فوراً.",

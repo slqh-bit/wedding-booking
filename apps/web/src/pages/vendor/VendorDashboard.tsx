@@ -13,7 +13,7 @@ import { AuthField } from '../auth/AuthField';
 import { useToast } from '@/design/Toast';
 import { VendorOfferings } from './VendorOfferings';
 
-type Tab = 'offerings' | 'bookings' | 'stats' | 'profile';
+type Tab = 'offerings' | 'bookings' | 'earnings' | 'stats' | 'profile';
 
 export function VendorDashboard() {
   const { t } = useTranslation();
@@ -23,6 +23,7 @@ export function VendorDashboard() {
   const tabs: { id: Tab; label: string }[] = [
     { id: 'offerings', label: t('vendor.tabs.offerings') },
     { id: 'bookings', label: t('vendor.tabs.bookings') },
+    { id: 'earnings', label: t('payout.earnings') },
     { id: 'stats', label: t('vendor.tabs.stats') },
     { id: 'profile', label: t('vendor.tabs.profile') },
   ];
@@ -63,6 +64,7 @@ export function VendorDashboard() {
 
       {tab === 'offerings' && <VendorOfferings />}
       {tab === 'bookings' && <VendorBookings />}
+      {tab === 'earnings' && <VendorEarnings />}
       {tab === 'stats' && <VendorStats />}
       {tab === 'profile' && <VendorProfile />}
     </div>
@@ -101,6 +103,64 @@ function VendorBookings() {
           </div>
         </div>
       ))}
+    </div>
+  );
+}
+
+function VendorEarnings() {
+  const { t, i18n } = useTranslation();
+  const locale = i18n.language as Locale;
+  const { data, isLoading } = useQuery({ queryKey: ['vendor-earnings'], queryFn: endpoints.vendorEarnings });
+
+  if (isLoading) return <Skeleton className="h-28" />;
+  if (!data || data.earnings.length === 0)
+    return <p className="py-8 text-center text-sm text-blush-400">{t('payout.empty')}</p>;
+
+  const tiles = [
+    { label: t('payout.gross'), value: money(data.totals.gross, locale), icon: '💰' },
+    { label: t('payout.commission'), value: money(data.totals.commission, locale), icon: '🏦' },
+    { label: t('payout.pending'), value: money(data.totals.pendingNet, locale), icon: '⏳' },
+    { label: t('payout.paid'), value: money(data.totals.paidNet, locale), icon: '✅' },
+  ];
+
+  return (
+    <div className="space-y-5">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        {tiles.map((c) => (
+          <div key={c.label} className="surface p-5">
+            <span className="text-2xl">{c.icon}</span>
+            <p className="mt-2 font-display text-xl font-bold text-gold-foil">{c.value}</p>
+            <p className="text-xs text-blush-500">{c.label}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="space-y-2.5">
+        {data.earnings.map((e) => (
+          <div key={e.id} className="surface flex flex-wrap items-center gap-3 p-3.5">
+            <div className="min-w-0 flex-1">
+              <p className="font-display text-sm font-bold tracking-wide text-gold-foil">{e.bookingRef}</p>
+              <p className="text-[11px] text-blush-400">
+                {e.eventDate} · {t('payout.gross')} {money(e.grossAmount, locale)} · {t('payout.commission')}{' '}
+                {money(e.commissionAmount, locale)} ({Math.round(e.commissionRate * 100)}%)
+              </p>
+            </div>
+            <div className="text-end">
+              <p className="text-xs text-blush-400">{t('payout.net')}</p>
+              <p className="font-display text-sm font-bold text-gold-700">{money(e.netAmount, locale)}</p>
+            </div>
+            <span
+              className={`rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
+                e.status === 'PAID'
+                  ? 'bg-emerald-50 text-emerald-700'
+                  : 'bg-amber-50 text-amber-700'
+              }`}
+            >
+              {e.status === 'PAID' ? t('payout.paid') : t('payout.pending')}
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

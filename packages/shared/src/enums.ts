@@ -121,6 +121,12 @@ export const ModerationStatus = {
 } as const;
 export type ModerationStatus = (typeof ModerationStatus)[keyof typeof ModerationStatus];
 
+export const EarningStatus = {
+  PENDING: 'PENDING',
+  PAID: 'PAID',
+} as const;
+export type EarningStatus = (typeof EarningStatus)[keyof typeof EarningStatus];
+
 /**
  * Whether a category is booked against a specific calendar date (services)
  * or is product-like (ordered with lead time, no hard per-date lock).

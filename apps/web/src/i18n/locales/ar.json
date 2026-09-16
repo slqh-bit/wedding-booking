@@ -149,9 +149,23 @@
     "APPROVED": "معتمد",
     "SUSPENDED": "معلّق"
   },
+  "payout": {
+    "title": "المستحقات",
+    "earnings": "الأرباح",
+    "gross": "الإجمالي",
+    "commission": "العمولة",
+    "net": "الصافي",
+    "pending": "قيد الدفع",
+    "paid": "مدفوع",
+    "markPaid": "تسجيل الدفع",
+    "empty": "لا توجد مستحقات بعد.",
+    "booking": "الحجز",
+    "status": "الحالة"
+  },
   "adminMarket": {
     "vendors": "المزوّدون",
     "moderation": "المراجعة",
+    "payouts": "المستحقات",
     "approve": "اعتماد",
     "reject": "رفض",
     "suspend": "تعليق",

@@ -37,6 +37,28 @@ adminRouter.patch(
   }),
 );
 
+// ── Payouts ─────────────────────────────────────────────
+adminRouter.get(
+  '/payouts',
+  asyncHandler(async (_req, res) => {
+    res.json({ data: await admin.listPayouts() });
+  }),
+);
+
+adminRouter.get(
+  '/payouts/:id',
+  asyncHandler(async (req, res) => {
+    res.json(await admin.getVendorPayout(param(req, 'id')));
+  }),
+);
+
+adminRouter.post(
+  '/payouts/:id/settle',
+  asyncHandler(async (req, res) => {
+    res.json(await admin.settlePayout(param(req, 'id')));
+  }),
+);
+
 // ── Vendors ─────────────────────────────────────────────
 adminRouter.get(
   '/vendors',

@@ -149,9 +149,23 @@
     "APPROVED": "Approuvé",
     "SUSPENDED": "Suspendu"
   },
+  "payout": {
+    "title": "Paiements",
+    "earnings": "Revenus",
+    "gross": "Brut",
+    "commission": "Commission",
+    "net": "Net",
+    "pending": "À régler",
+    "paid": "Payé",
+    "markPaid": "Marquer payé",
+    "empty": "Aucun paiement pour l’instant.",
+    "booking": "Réservation",
+    "status": "Statut"
+  },
   "adminMarket": {
     "vendors": "Prestataires",
     "moderation": "Modération",
+    "payouts": "Paiements",
     "approve": "Approuver",
     "reject": "Refuser",
     "suspend": "Suspendre",

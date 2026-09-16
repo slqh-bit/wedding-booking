@@ -13,6 +13,7 @@ import { prisma } from '../db.js';
 import { AppError } from '../http/errors.js';
 import { toBookingDTO, toOfferingDTO, toVendorDTO } from '../http/serialize.js';
 import { settlePayment } from '../payments/payment.service.js';
+import { earningsForVendorId, payoutSummaries, settleVendorPayout } from '../vendor/earnings.js';
 
 export { listNotifications } from '../notifications/notification.service.js';
 
@@ -110,6 +111,23 @@ export async function setOfferingModeration(offeringId: string, status: Moderati
     include: { vendor: { select: { name: true } } },
   });
   return toOfferingDTO(updated);
+}
+
+// ── Payouts (Phase 3 slice 2, reporting) ────────────────
+export async function listPayouts() {
+  return payoutSummaries();
+}
+
+export async function getVendorPayout(vendorId: string) {
+  const vendor = await prisma.vendor.findUnique({ where: { id: vendorId } });
+  if (!vendor) throw AppError.notFound('vendor_not_found', 'Vendor not found');
+  return earningsForVendorId(vendorId);
+}
+
+export async function settlePayout(vendorId: string) {
+  const vendor = await prisma.vendor.findUnique({ where: { id: vendorId } });
+  if (!vendor) throw AppError.notFound('vendor_not_found', 'Vendor not found');
+  return settleVendorPayout(vendorId);
 }
 
 export async function createOffering(input: OfferingInput) {

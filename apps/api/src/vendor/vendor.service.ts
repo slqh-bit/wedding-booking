@@ -12,6 +12,7 @@ import { prisma } from '../db.js';
 import { AppError } from '../http/errors.js';
 import { signAccessToken, signRefreshToken } from '../auth/jwt.js';
 import { toOfferingDTO, toUserDTO, toVendorDTO, decToNum } from '../http/serialize.js';
+import { earningsForVendorId } from './earnings.js';
 
 /** Resolve the vendor row owned by a user (throws if the user isn't a vendor). */
 async function myVendor(userId: string) {
@@ -219,6 +220,11 @@ export async function listMyBookings(userId: string) {
     })),
     vendorSubtotal: b.items.reduce((s, i) => s + decToNum(i.unitPrice), 0),
   }));
+}
+
+export async function myEarnings(userId: string) {
+  const vendor = await myVendor(userId);
+  return earningsForVendorId(vendor.id);
 }
 
 export async function vendorStats(userId: string) {

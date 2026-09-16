@@ -116,6 +116,36 @@ export interface NotificationDTO {
   sentAt: string | null;
 }
 
+export interface VendorEarningDTO {
+  id: string;
+  bookingId: string;
+  bookingRef: string;
+  eventDate: string;
+  grossAmount: number;
+  commissionRate: number;
+  commissionAmount: number;
+  netAmount: number;
+  status: 'PENDING' | 'PAID';
+  createdAt: string;
+  paidAt: string | null;
+}
+
+export interface PayoutSummaryDTO {
+  vendorId: string;
+  vendorName: string;
+  bookings: number;
+  gross: number;
+  commission: number;
+  net: number;
+  pendingNet: number;
+  paidNet: number;
+}
+
+export interface VendorEarningsResponse {
+  earnings: VendorEarningDTO[];
+  totals: { gross: number; commission: number; net: number; pendingNet: number; paidNet: number };
+}
+
 export interface ApiError {
   error: {
     code: string;

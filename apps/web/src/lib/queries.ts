@@ -6,7 +6,9 @@ import type {
   CreateBookingInput,
   NotificationDTO,
   OfferingDTO,
+  PayoutSummaryDTO,
   VendorDTO,
+  VendorEarningsResponse,
 } from '@hafalati/shared';
 import { api, downloadFile } from './api.js';
 
@@ -104,6 +106,12 @@ export const endpoints = {
     api.post<{ updated: number }>(`/vendor/offerings/${id}/availability`, { from, to, open }, true),
   vendorBookings: () => api.get<{ data: VendorBooking[] }>('/vendor/bookings', true).then((r) => r.data),
   vendorStats: () => api.get<VendorStats>('/vendor/stats', true),
+  vendorEarnings: () => api.get<VendorEarningsResponse>('/vendor/earnings', true),
+
+  // Admin payouts
+  adminPayouts: () => api.get<{ data: PayoutSummaryDTO[] }>('/admin/payouts', true).then((r) => r.data),
+  settleVendorPayout: (vendorId: string) =>
+    api.post<VendorEarningsResponse>(`/admin/payouts/${vendorId}/settle`, undefined, true),
 };
 
 export interface VendorBooking {

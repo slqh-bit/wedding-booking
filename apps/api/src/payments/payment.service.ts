@@ -61,6 +61,10 @@ export async function settlePayment(paymentId: string, opts: { adminId?: string 
           total: new Prisma.Decimal(fiscal.total),
         },
       });
+
+      // Record per-vendor earnings (payout ledger, reporting only). Platform-owned
+      // items produce no earning. Runs only on this first-settle path.
+      await recordVendorEarnings(tx, booking.id);
     }
   });
 
@@ -68,6 +72,54 @@ export async function settlePayment(paymentId: string, opts: { adminId?: string 
   await notifyPaymentConfirmed(booking.id);
 
   return toBookingDTO(await reload(booking.id));
+}
+
+const round3 = (n: number) => Math.round(n * 1000) / 1000;
+
+/**
+ * Create one VendorEarning per non-platform vendor with an item in the booking.
+ * gross = Σ their item prices; commission = gross × the vendor's current rate
+ * (snapshotted); net = gross − commission. Idempotent via @@unique(vendorId,bookingId).
+ */
+async function recordVendorEarnings(tx: Prisma.TransactionClient, bookingId: string) {
+  const items = await tx.bookingItem.findMany({
+    where: { bookingId },
+    include: {
+      offering: {
+        select: {
+          vendorId: true,
+          vendor: { select: { isPlatformOwned: true, commissionRate: true } },
+        },
+      },
+    },
+  });
+
+  const byVendor = new Map<string, { gross: number; rate: number }>();
+  for (const it of items) {
+    const v = it.offering.vendor;
+    if (v.isPlatformOwned) continue;
+    const acc = byVendor.get(it.offering.vendorId) ?? { gross: 0, rate: Number(v.commissionRate) };
+    acc.gross += Number(it.unitPrice);
+    byVendor.set(it.offering.vendorId, acc);
+  }
+
+  for (const [vendorId, { gross, rate }] of byVendor) {
+    const grossR = round3(gross);
+    const commission = round3(grossR * rate);
+    const net = round3(grossR - commission);
+    await tx.vendorEarning.upsert({
+      where: { vendorId_bookingId: { vendorId, bookingId } },
+      update: {},
+      create: {
+        vendorId,
+        bookingId,
+        grossAmount: new Prisma.Decimal(grossR),
+        commissionRate: new Prisma.Decimal(rate),
+        commissionAmount: new Prisma.Decimal(commission),
+        netAmount: new Prisma.Decimal(net),
+      },
+    });
+  }
 }
 
 /** Mark a payment FAILED (gateway reported failure/expiry). */

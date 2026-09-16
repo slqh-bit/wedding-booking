@@ -13,6 +13,7 @@ import { AppError } from '../http/errors.js';
 import { signAccessToken, signRefreshToken } from '../auth/jwt.js';
 import { toOfferingDTO, toUserDTO, toVendorDTO, decToNum } from '../http/serialize.js';
 import { earningsForVendorId } from './earnings.js';
+import { vendorRating } from '../reviews/reviews.service.js';
 
 /** Resolve the vendor row owned by a user (throws if the user isn't a vendor). */
 async function myVendor(userId: string) {
@@ -86,7 +87,7 @@ export async function listMyOfferings(userId: string) {
     include: { vendor: { select: { name: true } } },
     orderBy: [{ category: 'asc' }, { createdAt: 'desc' }],
   });
-  return offerings.map(toOfferingDTO);
+  return offerings.map((o) => toOfferingDTO(o));
 }
 
 export async function createMyOffering(userId: string, input: OfferingInput) {
@@ -229,7 +230,7 @@ export async function myEarnings(userId: string) {
 
 export async function vendorStats(userId: string) {
   const vendor = await myVendor(userId);
-  const [byModeration, itemAgg, bookingCount] = await Promise.all([
+  const [byModeration, itemAgg, bookingCount, rating] = await Promise.all([
     prisma.serviceOffering.groupBy({
       by: ['moderationStatus'],
       where: { vendorId: vendor.id },
@@ -245,6 +246,7 @@ export async function vendorStats(userId: string) {
     prisma.booking.count({
       where: { items: { some: { offering: { vendorId: vendor.id } } } },
     }),
+    vendorRating(vendor.id),
   ]);
 
   const offerings: Record<string, number> = {};
@@ -259,5 +261,7 @@ export async function vendorStats(userId: string) {
     grossRevenue,
     estimatedCommission: Math.round(grossRevenue * decToNum(vendor.commissionRate) * 1000) / 1000,
     estimatedNet: Math.round(grossRevenue * (1 - decToNum(vendor.commissionRate)) * 1000) / 1000,
+    ratingAvg: rating.avg,
+    ratingCount: rating.count,
   };
 }

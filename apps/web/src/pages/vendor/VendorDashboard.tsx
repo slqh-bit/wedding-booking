@@ -8,6 +8,7 @@ import { GoldButton } from '@/design/GoldButton';
 import { OrnamentDivider } from '@/design/Ornament';
 import { Skeleton } from '@/design/Skeleton';
 import { StatusBadge } from '@/design/StatusBadge';
+import { Stars } from '@/design/Stars';
 import { VendorStatusBadge } from '@/design/ModerationBadge';
 import { AuthField } from '../auth/AuthField';
 import { useToast } from '@/design/Toast';
@@ -185,7 +186,7 @@ function VendorStats() {
     { label: t('vendor.netRevenue'), value: money(s.estimatedNet, locale), icon: '✨' },
   ];
   return (
-    <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+    <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
       {cards.map((c) => (
         <div key={c.label} className="surface p-5">
           <span className="text-2xl">{c.icon}</span>
@@ -193,6 +194,14 @@ function VendorStats() {
           <p className="text-xs text-blush-500">{c.label}</p>
         </div>
       ))}
+      <div className="surface p-5">
+        <span className="text-2xl">⭐</span>
+        <p className="mt-2 font-display text-xl font-bold text-gold-foil">
+          {s.ratingCount > 0 ? s.ratingAvg.toFixed(1) : '—'}
+        </p>
+        <Stars value={s.ratingAvg} count={s.ratingCount} className="mt-0.5" />
+        <p className="text-xs text-blush-500">{t('review.title')}</p>
+      </div>
     </div>
   );
 }

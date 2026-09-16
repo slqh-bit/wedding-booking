@@ -41,6 +41,10 @@ export interface OfferingDTO {
   isActive: boolean;
   moderationStatus: 'PENDING' | 'APPROVED' | 'REJECTED';
   vendorName: string;
+  /** Average of published review ratings (0 when none), 1 decimal. */
+  ratingAvg: number;
+  /** Number of published reviews. */
+  ratingCount: number;
 }
 
 export interface VendorDTO {
@@ -56,6 +60,9 @@ export interface VendorDTO {
   commissionRate: number;
   offeringCount?: number;
   createdAt?: string;
+  /** Average of published review ratings across this vendor's offerings. */
+  ratingAvg?: number;
+  ratingCount?: number;
 }
 
 export interface CategoryDTO {
@@ -114,6 +121,18 @@ export interface NotificationDTO {
   bookingRef: string | null;
   createdAt: string;
   sentAt: string | null;
+}
+
+export interface ReviewDTO {
+  id: string;
+  offeringId: string;
+  bookingId: string;
+  rating: number;
+  comment: string | null;
+  status: 'PUBLISHED' | 'HIDDEN';
+  authorName: string;
+  offeringName: LocalizedString;
+  createdAt: string;
 }
 
 export interface VendorEarningDTO {

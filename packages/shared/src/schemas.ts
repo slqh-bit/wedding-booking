@@ -134,6 +134,17 @@ export const adminVendorCreateSchema = z.object({
 });
 export type AdminVendorCreateInput = z.infer<typeof adminVendorCreateSchema>;
 
+// ── Reviews (Phase 3 slice 3) ───────────────────────────
+export const reviewStatusSchema = z.enum(['PUBLISHED', 'HIDDEN']);
+
+/** Customer rates an offering (1–5 stars) after a COMPLETED booking with it. */
+export const reviewInputSchema = z.object({
+  offeringId: z.string().cuid(),
+  rating: z.number().int().min(1).max(5),
+  comment: z.string().trim().max(1000).optional(),
+});
+export type ReviewInput = z.infer<typeof reviewInputSchema>;
+
 /** Availability generation for an owned offering (a date range to open/close). */
 export const availabilityRangeSchema = z.object({
   from: eventDateSchema,

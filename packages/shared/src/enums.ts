@@ -127,6 +127,12 @@ export const EarningStatus = {
 } as const;
 export type EarningStatus = (typeof EarningStatus)[keyof typeof EarningStatus];
 
+export const ReviewStatus = {
+  PUBLISHED: 'PUBLISHED',
+  HIDDEN: 'HIDDEN',
+} as const;
+export type ReviewStatus = (typeof ReviewStatus)[keyof typeof ReviewStatus];
+
 /**
  * Whether a category is booked against a specific calendar date (services)
  * or is product-like (ordered with lead time, no hard per-date lock).

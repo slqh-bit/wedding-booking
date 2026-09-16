@@ -3,6 +3,7 @@ import { CATEGORY_ORDER, type ServiceCategory } from '@hafalati/shared';
 import { asyncHandler, AppError } from '../http/errors.js';
 import { param } from '../http/params.js';
 import * as catalog from './catalog.service.js';
+import * as reviews from '../reviews/reviews.service.js';
 
 export const catalogRouter: Router = Router();
 
@@ -29,6 +30,13 @@ catalogRouter.get(
   '/offerings/:id',
   asyncHandler(async (req, res) => {
     res.json(await catalog.getOffering(param(req, 'id')));
+  }),
+);
+
+catalogRouter.get(
+  '/offerings/:id/reviews',
+  asyncHandler(async (req, res) => {
+    res.json({ data: await reviews.listOfferingReviews(param(req, 'id')) });
   }),
 );
 

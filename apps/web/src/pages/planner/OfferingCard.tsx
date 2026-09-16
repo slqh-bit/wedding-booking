@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { CATEGORY_META, type Locale, type OfferingDTO } from '@hafalati/shared';
 import { loc, money } from '@/lib/format';
+import { Stars } from '@/design/Stars';
 
 interface Props {
   offering: OfferingDTO;
@@ -33,6 +34,9 @@ export function OfferingCard({ offering, selected, onSelect }: Props) {
       </div>
       <div className="p-4">
         <h4 className="font-display text-base font-bold text-blush-900">{loc(offering.name, locale)}</h4>
+        {offering.ratingCount > 0 && (
+          <Stars value={offering.ratingAvg} count={offering.ratingCount} className="mt-1" />
+        )}
         <p className="mt-0.5 line-clamp-2 text-xs text-blush-500">{loc(offering.description, locale)}</p>
         <div className="mt-3 flex items-center justify-between gap-2">
           {badge && (

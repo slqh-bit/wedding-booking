@@ -162,10 +162,28 @@
     "booking": "الحجز",
     "status": "الحالة"
   },
+  "review": {
+    "title": "التقييمات",
+    "rate": "قيّم الخدمة",
+    "edit": "تعديل التقييم",
+    "yourRating": "تقييمك",
+    "comment": "تعليقك (اختياري)",
+    "commentPlaceholder": "شاركنا تجربتك…",
+    "submit": "إرسال التقييم",
+    "thanks": "شكراً على تقييمك!",
+    "empty": "لا توجد تقييمات بعد.",
+    "hide": "إخفاء",
+    "publish": "نشر",
+    "PUBLISHED": "منشور",
+    "HIDDEN": "مخفي",
+    "by": "بقلم",
+    "reviewsCount": "تقييم"
+  },
   "adminMarket": {
     "vendors": "المزوّدون",
     "moderation": "المراجعة",
     "payouts": "المستحقات",
+    "reviews": "التقييمات",
     "approve": "اعتماد",
     "reject": "رفض",
     "suspend": "تعليق",

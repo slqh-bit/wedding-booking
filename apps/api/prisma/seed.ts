@@ -139,7 +139,7 @@ async function main() {
     },
   });
 
-  await prisma.user.create({
+  const client = await prisma.user.create({
     data: {
       email: 'client@hafalati.tn',
       phone: '+21620000000',
@@ -296,6 +296,66 @@ async function main() {
       },
     ],
   });
+
+  // ── Demo reviews (Phase 3 slice 3) ──────────────────────
+  // A COMPLETED booking unlocks the client's reviews so stars show at once.
+  const hall = await prisma.serviceOffering.findFirst({
+    where: { category: 'HALL', vendor: { isPlatformOwned: true } },
+    orderBy: { basePrice: 'asc' },
+  });
+  const photo = await prisma.serviceOffering.findFirst({
+    where: { category: 'PHOTOGRAPHY', vendor: { email: 'vendor@hafalati.tn' } },
+  });
+  const reviewables = [hall, photo].filter((o): o is NonNullable<typeof o> => o !== null);
+
+  if (reviewables.length > 0) {
+    const round3 = (n: number) => Math.round(n * 1000) / 1000;
+    const subtotal = round3(reviewables.reduce((s, o) => s + Number(o.basePrice), 0));
+    const tva = round3(subtotal * 0.19);
+    const timbre = 1;
+    const total = round3(subtotal + tva + timbre);
+    const booking = await prisma.booking.create({
+      data: {
+        reference: 'HF-DEMO01',
+        userId: client.id,
+        eventDate: addDays(startOfToday, -30), // a past, completed event
+        eventType: 'WEDDING',
+        status: 'COMPLETED',
+        subtotal: new Prisma.Decimal(subtotal),
+        tva: new Prisma.Decimal(tva),
+        timbreFiscal: new Prisma.Decimal(timbre),
+        total: new Prisma.Decimal(total),
+        depositAmount: new Prisma.Decimal(round3(total * 0.3)),
+        depositStatus: 'PAID',
+        items: {
+          create: reviewables.map((o) => ({
+            offeringId: o.id,
+            category: o.category,
+            unitPrice: o.basePrice,
+            snapshot: o.name as Prisma.InputJsonValue,
+          })),
+        },
+      },
+    });
+
+    const notes: Record<string, { rating: number; comment: string }> = {
+      HALL: { rating: 5, comment: 'قاعة رائعة وخدمة ممتازة، شكراً حفلاتي!' },
+      PHOTOGRAPHY: { rating: 4, comment: 'تصوير احترافي، الصور خيالية.' },
+    };
+    for (const o of reviewables) {
+      const n = notes[o.category] ?? { rating: 5, comment: 'ممتاز' };
+      await prisma.review.create({
+        data: {
+          userId: client.id,
+          offeringId: o.id,
+          bookingId: booking.id,
+          rating: n.rating,
+          comment: n.comment,
+          status: 'PUBLISHED',
+        },
+      });
+    }
+  }
 
   console.log(
     `✅ Seed complete: ${offeringCount} platform offerings + 2 demo vendors across ${Object.keys(CATALOG).length} categories.`,

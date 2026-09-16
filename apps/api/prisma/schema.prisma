@@ -101,6 +101,11 @@ enum ModerationStatus {
   REJECTED
 }
 
+enum EarningStatus {
+  PENDING
+  PAID
+}
+
 // ── Models ───────────────────────────────────────────────
 model User {
   id           String   @id @default(cuid())
@@ -148,6 +153,7 @@ model Vendor {
 
   owner     User?             @relation("VendorOwner", fields: [userId], references: [id])
   offerings ServiceOffering[]
+  earnings  VendorEarning[]
 }
 
 model ServiceOffering {
@@ -217,6 +223,7 @@ model Booking {
   payments      Payment[]
   invoice       Invoice?
   notifications Notification[]
+  earnings      VendorEarning[]
 
   @@index([userId])
   @@index([status])
@@ -287,6 +294,27 @@ model Notification {
   @@unique([bookingId, type, channel])
   @@index([userId])
   @@index([status])
+}
+
+/// Per-vendor earnings for a booking (Phase 3 payout ledger, reporting only).
+/// One row per (vendor, booking); commissionRate is snapshotted at settle time.
+model VendorEarning {
+  id               String        @id @default(cuid())
+  vendorId         String
+  bookingId        String
+  grossAmount      Decimal       @db.Decimal(12, 3)
+  commissionRate   Decimal       @db.Decimal(4, 3)
+  commissionAmount Decimal       @db.Decimal(12, 3)
+  netAmount        Decimal       @db.Decimal(12, 3)
+  status           EarningStatus @default(PENDING)
+  createdAt        DateTime      @default(now())
+  paidAt           DateTime?
+
+  vendor  Vendor  @relation(fields: [vendorId], references: [id])
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@unique([vendorId, bookingId])
+  @@index([vendorId, status])
 }
 
 /// Tunisian-compliant invoice (TVA 19% + Timbre Fiscal). PDF export is Phase 2.

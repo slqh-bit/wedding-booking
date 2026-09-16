@@ -149,9 +149,23 @@
     "APPROVED": "Approved",
     "SUSPENDED": "Suspended"
   },
+  "payout": {
+    "title": "Payouts",
+    "earnings": "Earnings",
+    "gross": "Gross",
+    "commission": "Commission",
+    "net": "Net",
+    "pending": "Pending",
+    "paid": "Paid",
+    "markPaid": "Mark paid",
+    "empty": "No payouts yet.",
+    "booking": "Booking",
+    "status": "Status"
+  },
   "adminMarket": {
     "vendors": "Vendors",
     "moderation": "Moderation",
+    "payouts": "Payouts",
     "approve": "Approve",
     "reject": "Reject",
     "suspend": "Suspend",

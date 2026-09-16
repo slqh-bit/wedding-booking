@@ -83,3 +83,7 @@ vendorRouter.get('/bookings', asyncHandler(async (req, res) => {
 vendorRouter.get('/stats', asyncHandler(async (req, res) => {
   res.json(await vendors.vendorStats(req.user!.id));
 }));
+
+vendorRouter.get('/earnings', asyncHandler(async (req, res) => {
+  res.json(await vendors.myEarnings(req.user!.id));
+}));

@@ -9,8 +9,16 @@ import { AdminOfferings } from './AdminOfferings';
 import { AdminNotifications } from './AdminNotifications';
 import { AdminVendors } from './AdminVendors';
 import { AdminModeration } from './AdminModeration';
+import { AdminPayouts } from './AdminPayouts';
 
-type Tab = 'dashboard' | 'bookings' | 'offerings' | 'vendors' | 'moderation' | 'notifications';
+type Tab =
+  | 'dashboard'
+  | 'bookings'
+  | 'offerings'
+  | 'vendors'
+  | 'moderation'
+  | 'payouts'
+  | 'notifications';
 
 export function AdminDashboard() {
   const { t } = useTranslation();
@@ -23,6 +31,7 @@ export function AdminDashboard() {
     { id: 'offerings', label: t('admin.offerings') },
     { id: 'vendors', label: t('adminMarket.vendors') },
     { id: 'moderation', label: t('adminMarket.moderation') },
+    { id: 'payouts', label: t('adminMarket.payouts') },
     { id: 'notifications', label: t('admin.notifications') },
   ];
 
@@ -51,6 +60,7 @@ export function AdminDashboard() {
       {tab === 'offerings' && <AdminOfferings />}
       {tab === 'vendors' && <AdminVendors />}
       {tab === 'moderation' && <AdminModeration />}
+      {tab === 'payouts' && <AdminPayouts />}
       {tab === 'notifications' && <AdminNotifications />}
     </div>
   );

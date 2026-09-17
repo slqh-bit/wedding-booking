@@ -33,3 +33,6 @@ apps/api/uploads/*
 
 # test / coverage
 coverage/
+
+# Uploaded offering images (runtime data)
+apps/api/uploads/

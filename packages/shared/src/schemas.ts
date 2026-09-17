@@ -47,7 +47,10 @@ export const offeringInputSchema = z.object({
   basePrice: z.number().nonnegative(),
   emoji: z.string().max(8).optional(),
   attributes: z.record(z.string(), z.unknown()).default({}),
-  imageUrls: z.array(z.string().url()).default([]),
+  // Absolute http(s) URL or a relative /uploads/... path from the upload API.
+  imageUrls: z
+    .array(z.string().max(500).refine((s) => /^https?:\/\//.test(s) || s.startsWith('/uploads/'), 'invalid_image_url'))
+    .default([]),
   isActive: z.boolean().default(true),
 });
 export type OfferingInput = z.infer<typeof offeringInputSchema>;

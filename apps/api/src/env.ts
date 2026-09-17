@@ -13,6 +13,12 @@ const envSchema = z.object({
   SERVE_WEB: z.coerce.boolean().default(false),
   WEB_DIST_DIR: z.string().optional(),
 
+  // Uploaded offering images. Stored on disk under UPLOAD_DIR and served at
+  // /uploads. On Railway, point UPLOAD_DIR at a mounted volume so images
+  // survive redeploys (see DEPLOY.md).
+  UPLOAD_DIR: z.string().optional(),
+  MAX_UPLOAD_MB: z.coerce.number().default(5),
+
   JWT_ACCESS_SECRET: z.string().min(16),
   JWT_REFRESH_SECRET: z.string().min(16),
   JWT_ACCESS_TTL: z.string().default('15m'),

@@ -20,6 +20,12 @@
     "servicesSubtitle": "Tout ce qu’il faut pour un événement parfait, au même endroit",
     "stepsTitle": "Planifiez votre fête en 11 étapes simples"
   },
+  "offeringImg": {
+    "title": "Photos du service",
+    "add": "Ajouter",
+    "hint": "JPEG · PNG · WebP — jusqu’à 5 Mo",
+    "failed": "Échec du téléversement"
+  },
   "analytics": {
     "title": "Analyses",
     "revenue": "Revenus confirmés",

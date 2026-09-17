@@ -15,6 +15,7 @@ import { notificationsRouter } from './notifications/notifications.routes.js';
 import { vendorPublicRouter, vendorRouter } from './vendor/vendor.routes.js';
 import { reviewsRouter } from './reviews/reviews.routes.js';
 import { packagesRouter } from './packages/packages.routes.js';
+import { uploadsRouter, uploadDir } from './uploads/uploads.routes.js';
 import { adminRouter } from './admin/admin.routes.js';
 
 export function createApp(): Express {
@@ -61,7 +62,11 @@ export function createApp(): Express {
   app.use('/api/v1/vendor', vendorRouter);
   app.use('/api/v1/reviews', reviewsRouter);
   app.use('/api/v1/packages', packagesRouter);
+  app.use('/api/v1/uploads', uploadsRouter);
   app.use('/api/v1/admin', adminRouter);
+
+  // Serve uploaded offering images (cached; same origin in production).
+  app.use('/uploads', express.static(uploadDir, { maxAge: '7d', immutable: true }));
 
   // Single-service deploy: serve the built PWA and fall back to index.html for
   // client-side routes (anything that isn't an API path or the health check).
@@ -71,7 +76,9 @@ export function createApp(): Express {
       : path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../web/dist');
     app.use(express.static(webDist));
     app.get('*', (req, res, next) => {
-      if (req.path.startsWith('/api') || req.path === '/health') return next();
+      if (req.path.startsWith('/api') || req.path.startsWith('/uploads') || req.path === '/health') {
+        return next();
+      }
       res.sendFile(path.join(webDist, 'index.html'));
     });
   }

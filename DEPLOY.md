@@ -93,9 +93,22 @@ so no rebuild is needed when the domain changes.
 
 Visit your URL — the PWA loads, and `…/api/v1/categories` returns JSON.
 
-## 7. Custom domain (optional)
+## 7. Persistent storage for uploaded images
+
+Offering images are written to disk under `UPLOAD_DIR` and served at `/uploads`.
+A container's filesystem is **ephemeral**, so without a volume, uploaded images
+vanish on redeploy. Attach a Railway volume:
+
+1. App service → **Settings** → **Volumes** → **New Volume**, mount path e.g. `/data`.
+2. Add a variable `UPLOAD_DIR = /data/uploads` on the app service.
+
+The app creates the directory on boot. `MAX_UPLOAD_MB` (default 5) caps upload size.
+
+## 8. Custom domain (optional)
 
 App service → **Settings** → **Networking** → **Custom Domain** → add your domain and set the CNAME at your DNS provider. Then update `WEB_ORIGIN` / `PUBLIC_WEB_URL` / `PUBLIC_API_URL` to the custom domain and redeploy.
+
+> The image-upload volume from step 7 is optional but recommended before real vendors add photos.
 
 ---
 

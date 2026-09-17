@@ -10,6 +10,9 @@ import { fiscalConfig } from '../env.js';
 import { AppError } from '../http/errors.js';
 import { toBookingDTO } from '../http/serialize.js';
 import { notifyBookingReceived } from '../notifications/notification.service.js';
+import { resolvePackageForBooking } from '../packages/packages.service.js';
+
+const round3 = (n: number) => Math.round(n * 1000) / 1000;
 
 const bookingInclude = {
   items: { include: { offering: { select: { emoji: true } } } },
@@ -31,12 +34,21 @@ function parseEventDate(iso: string): Date {
 export async function createBooking(userId: string, input: CreateBookingInput) {
   const eventDate = parseEventDate(input.eventDate);
 
-  const offerings = await prisma.serviceOffering.findMany({
-    where: { id: { in: input.offeringIds }, isActive: true },
-  });
-
-  if (offerings.length !== input.offeringIds.length) {
-    throw AppError.badRequest('invalid_offering', 'One or more offerings are unavailable');
+  // A promo package supplies its own offerings + a discount; otherwise the
+  // wizard sends explicit offering ids at full price.
+  let discountRate = 0;
+  let offerings;
+  if (input.packageId) {
+    const resolved = await resolvePackageForBooking(input.packageId);
+    discountRate = resolved.discountRate;
+    offerings = resolved.offerings;
+  } else {
+    offerings = await prisma.serviceOffering.findMany({
+      where: { id: { in: input.offeringIds }, isActive: true },
+    });
+    if (offerings.length !== input.offeringIds.length) {
+      throw AppError.badRequest('invalid_offering', 'One or more offerings are unavailable');
+    }
   }
 
   // One selection per category.
@@ -52,8 +64,10 @@ export async function createBooking(userId: string, input: CreateBookingInput) {
   // Verify date-bound offerings are free on the event date.
   await assertDatesAvailable(offerings, eventDate);
 
+  // Discounted unit price flows through the fiscal engine (TVA/timbre/deposit).
+  const priced = offerings.map((o) => ({ o, unitPrice: round3(Number(o.basePrice) * (1 - discountRate)) }));
   const fiscal = computeTotals(
-    offerings.map((o) => ({ unitPrice: Number(o.basePrice) })),
+    priced.map((p) => ({ unitPrice: p.unitPrice })),
     fiscalConfig,
   );
 
@@ -61,6 +75,7 @@ export async function createBooking(userId: string, input: CreateBookingInput) {
     data: {
       reference: generateReference(),
       userId,
+      packageId: input.packageId ?? null,
       eventDate,
       eventType: input.eventType,
       status: 'DRAFT',
@@ -71,10 +86,10 @@ export async function createBooking(userId: string, input: CreateBookingInput) {
       depositAmount: new Prisma.Decimal(fiscal.deposit),
       notes: input.notes,
       items: {
-        create: offerings.map((o) => ({
+        create: priced.map(({ o, unitPrice }) => ({
           offeringId: o.id,
           category: o.category,
-          unitPrice: o.basePrice,
+          unitPrice: new Prisma.Decimal(unitPrice),
           snapshot: o.name as Prisma.InputJsonValue,
         })),
       },

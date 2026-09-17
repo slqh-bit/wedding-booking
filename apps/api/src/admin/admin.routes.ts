@@ -5,6 +5,8 @@ import {
   moderationStatusSchema,
   offeringInputSchema,
   offeringUpdateSchema,
+  packageInputSchema,
+  packageUpdateSchema,
   recordPaymentSchema,
   reviewStatusSchema,
   vendorStatusSchema,
@@ -74,6 +76,37 @@ adminRouter.patch(
   validateBody(z.object({ status: reviewStatusSchema })),
   asyncHandler(async (req, res) => {
     res.json(await admin.setReviewStatus(param(req, 'id'), req.body.status));
+  }),
+);
+
+// ── Promo packages ──────────────────────────────────────
+adminRouter.get(
+  '/packages',
+  asyncHandler(async (_req, res) => {
+    res.json({ data: await admin.listAllPackages() });
+  }),
+);
+
+adminRouter.post(
+  '/packages',
+  validateBody(packageInputSchema),
+  asyncHandler(async (req, res) => {
+    res.status(201).json(await admin.createPackage(req.body));
+  }),
+);
+
+adminRouter.patch(
+  '/packages/:id',
+  validateBody(packageUpdateSchema),
+  asyncHandler(async (req, res) => {
+    res.json(await admin.updatePackage(param(req, 'id'), req.body));
+  }),
+);
+
+adminRouter.delete(
+  '/packages/:id',
+  asyncHandler(async (req, res) => {
+    res.json(await admin.deletePackage(param(req, 'id')));
   }),
 );
 

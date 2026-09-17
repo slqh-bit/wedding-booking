@@ -4,6 +4,7 @@
     "home": "Home",
     "services": "Services",
     "browse": "Browse",
+    "packages": "Packages",
     "plan": "Plan your event",
     "account": "My account",
     "admin": "Admin",
@@ -18,6 +19,14 @@
     "servicesTitle": "Our all-in-one services",
     "servicesSubtitle": "Everything you need for a perfect event, in one place",
     "stepsTitle": "Plan your event in 11 easy steps"
+  },
+  "packages": {
+    "title": "Ready-made packages",
+    "subtitle": "Hand-picked bundles at a discount — everything for your event in one offer",
+    "empty": "No packages available right now.",
+    "book": "Book this package",
+    "save": "Save",
+    "dateUnavailable": "The chosen date isn't available for one of the package's services"
   },
   "browse": {
     "title": "Browse services",

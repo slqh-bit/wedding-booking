@@ -187,6 +187,7 @@ model ServiceOffering {
   availability Availability[]
   bookingItems BookingItem[]
   reviews      Review[]
+  packageItems PackageItem[]
 
   @@index([category, isActive])
   @@index([vendorId])
@@ -211,6 +212,8 @@ model Booking {
   id            String        @id @default(cuid())
   reference     String        @unique
   userId        String
+  /// Set when this booking was created from a curated promo package.
+  packageId     String?
   eventDate     DateTime      @db.Date
   eventType     EventType
   status        BookingStatus @default(DRAFT)
@@ -226,6 +229,7 @@ model Booking {
   updatedAt     DateTime      @updatedAt
 
   user          User           @relation(fields: [userId], references: [id])
+  promoPackage  Package?       @relation(fields: [packageId], references: [id])
   items         BookingItem[]
   payments      Payment[]
   invoice       Invoice?
@@ -347,6 +351,39 @@ model Review {
   @@unique([userId, offeringId])
   @@index([offeringId, status])
   @@index([status])
+}
+
+/// A curated promo bundle ("الباقة"): several offerings sold together at a
+/// discount. discountRate is a fraction (0.150 = 15% off the summed prices).
+model Package {
+  id           String        @id @default(cuid())
+  /// LocalizedString JSON: { ar, fr, en }
+  name         Json
+  /// LocalizedString JSON: { ar, fr, en }
+  description  Json
+  emoji        String        @default("🎁")
+  imageUrl     String?
+  discountRate Decimal       @default(0.100) @db.Decimal(4, 3)
+  isActive     Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  items    PackageItem[]
+  bookings Booking[]
+
+  @@index([isActive])
+}
+
+model PackageItem {
+  id         String @id @default(cuid())
+  packageId  String
+  offeringId String
+
+  package  Package         @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  offering ServiceOffering @relation(fields: [offeringId], references: [id], onDelete: Cascade)
+
+  @@unique([packageId, offeringId])
+  @@index([packageId])
 }
 
 /// Tunisian-compliant invoice (TVA 19% + Timbre Fiscal). PDF export is Phase 2.

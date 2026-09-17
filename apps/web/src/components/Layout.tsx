@@ -31,6 +31,9 @@ export function Layout() {
             <NavLink to="/browse" className={navLinkClass}>
               {t('nav.browse')}
             </NavLink>
+            <NavLink to="/packages" className={navLinkClass}>
+              {t('nav.packages')}
+            </NavLink>
             <NavLink to="/plan" className={navLinkClass}>
               {t('nav.plan')}
             </NavLink>
@@ -85,6 +88,9 @@ export function Layout() {
               </NavLink>
               <NavLink to="/browse" className={navLinkClass} onClick={() => setOpen(false)}>
                 {t('nav.browse')}
+              </NavLink>
+              <NavLink to="/packages" className={navLinkClass} onClick={() => setOpen(false)}>
+                {t('nav.packages')}
               </NavLink>
               <NavLink to="/plan" className={navLinkClass} onClick={() => setOpen(false)}>
                 {t('nav.plan')}

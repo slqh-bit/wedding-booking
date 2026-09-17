@@ -69,13 +69,20 @@ export const eventDateSchema = z
   .regex(/^\d{4}-\d{2}-\d{2}$/, 'invalid_date')
   .refine((d) => !Number.isNaN(Date.parse(d)), 'invalid_date');
 
-export const createBookingSchema = z.object({
-  eventDate: eventDateSchema,
-  eventType: eventTypeSchema,
-  /** One selected offering id per chosen category. At least one required. */
-  offeringIds: z.array(z.string().cuid()).min(1, 'select_at_least_one'),
-  notes: z.string().max(1000).optional(),
-});
+export const createBookingSchema = z
+  .object({
+    eventDate: eventDateSchema,
+    eventType: eventTypeSchema,
+    /** One selected offering id per chosen category. */
+    offeringIds: z.array(z.string().cuid()).default([]),
+    /** When set, the booking is built from a curated promo package instead. */
+    packageId: z.string().cuid().optional(),
+    notes: z.string().max(1000).optional(),
+  })
+  .refine((b) => b.packageId || b.offeringIds.length > 0, {
+    message: 'select_at_least_one',
+    path: ['offeringIds'],
+  });
 export type CreateBookingInput = z.infer<typeof createBookingSchema>;
 
 // ── Payments (admin confirm) ────────────────────────────
@@ -133,6 +140,21 @@ export const adminVendorCreateSchema = z.object({
     .optional(),
 });
 export type AdminVendorCreateInput = z.infer<typeof adminVendorCreateSchema>;
+
+// ── Promo packages (Phase 3 slice 5) ────────────────────
+export const packageInputSchema = z.object({
+  name: localizedStringSchema,
+  description: localizedStringSchema,
+  emoji: z.string().max(8).optional(),
+  imageUrl: z.string().url().optional(),
+  discountRate: z.number().min(0).max(0.9),
+  isActive: z.boolean().default(true),
+  /** The offerings bundled into this package (at least two to be a "bundle"). */
+  offeringIds: z.array(z.string().cuid()).min(2, 'need_two_offerings'),
+});
+export type PackageInput = z.infer<typeof packageInputSchema>;
+
+export const packageUpdateSchema = packageInputSchema.partial();
 
 // ── Catalog search (Phase 3 slice 4) ────────────────────
 export const sortKeySchema = z.enum(['price_asc', 'price_desc', 'rating_desc', 'newest']);

@@ -17,6 +17,12 @@ import { earningsForVendorId, payoutSummaries, settleVendorPayout } from '../ven
 
 export { listNotifications } from '../notifications/notification.service.js';
 export { listReviews, setReviewStatus } from '../reviews/reviews.service.js';
+export {
+  listAllPackages,
+  createPackage,
+  updatePackage,
+  deletePackage,
+} from '../packages/packages.service.js';
 
 // ── Offerings CRUD ──────────────────────────────────────
 async function platformVendorId(): Promise<string> {

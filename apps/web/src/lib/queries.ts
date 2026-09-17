@@ -1,5 +1,6 @@
 /** Typed API endpoint helpers used by react-query hooks. */
 import type {
+  AnalyticsDTO,
   AuthResponse,
   BookingDTO,
   CategoryDTO,
@@ -62,6 +63,7 @@ export const endpoints = {
 
   // Admin
   adminStats: () => api.get<AdminStats>('/admin/stats', true),
+  adminAnalytics: () => api.get<AnalyticsDTO>('/admin/analytics', true),
   adminBookings: (status?: string) =>
     api
       .get<{ data: BookingDTO[] }>(`/admin/bookings${status ? `?status=${status}` : ''}`, true)

@@ -208,3 +208,10 @@ adminRouter.get(
     res.json(await admin.dashboardStats());
   }),
 );
+
+adminRouter.get(
+  '/analytics',
+  asyncHandler(async (_req, res) => {
+    res.json(await admin.analytics());
+  }),
+);

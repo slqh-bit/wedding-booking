@@ -20,6 +20,18 @@
     "servicesSubtitle": "Everything you need for a perfect event, in one place",
     "stepsTitle": "Plan your event in 11 easy steps"
   },
+  "analytics": {
+    "title": "Analytics",
+    "revenue": "Confirmed revenue",
+    "bookings": "Total bookings",
+    "customers": "Customers",
+    "activeOfferings": "Active offerings",
+    "satisfaction": "Customer satisfaction",
+    "statusMix": "Booking status mix",
+    "revenueTrend": "Revenue by month",
+    "topOfferings": "Top sellers",
+    "x": "bk"
+  },
   "adminPkg": {
     "new": "New package",
     "edit": "Edit package",

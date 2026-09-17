@@ -277,3 +277,103 @@ export async function dashboardStats() {
     customers: customerCount,
   };
 }
+
+/** The last `months` month keys (YYYY-MM), oldest first, ending on this month. */
+function recentMonthKeys(months: number): string[] {
+  const keys: string[] = [];
+  const d = new Date();
+  d.setUTCDate(1);
+  for (let i = months - 1; i >= 0; i -= 1) {
+    const m = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() - i, 1));
+    keys.push(`${m.getUTCFullYear()}-${String(m.getUTCMonth() + 1).padStart(2, '0')}`);
+  }
+  return keys;
+}
+
+/** Admin analytics: KPIs, revenue trend, status mix, top offerings, ratings. */
+export async function analytics() {
+  const REALIZED = ['CONFIRMED', 'COMPLETED'] as const;
+
+  const [byStatus, revenueAgg, offeringCount, customerCount, ratingAgg, realized, topItems, ratingRows] =
+    await Promise.all([
+      prisma.booking.groupBy({ by: ['status'], _count: { _all: true } }),
+      prisma.booking.aggregate({ where: { status: { in: [...REALIZED] } }, _sum: { total: true } }),
+      prisma.serviceOffering.count({ where: { isActive: true } }),
+      prisma.user.count({ where: { role: 'CUSTOMER' } }),
+      prisma.review.aggregate({ where: { status: 'PUBLISHED' }, _avg: { rating: true }, _count: { _all: true } }),
+      // Realized bookings for the revenue trend (small dataset — bucket in app).
+      prisma.booking.findMany({
+        where: { status: { in: [...REALIZED] } },
+        select: { total: true, createdAt: true },
+      }),
+      prisma.bookingItem.groupBy({
+        by: ['offeringId'],
+        where: { booking: { status: { in: [...REALIZED] } } },
+        _sum: { unitPrice: true },
+        _count: { _all: true },
+      }),
+      prisma.review.groupBy({ by: ['rating'], where: { status: 'PUBLISHED' }, _count: { _all: true } }),
+    ]);
+
+  const bookingsByStatus: Record<string, number> = {};
+  let totalBookings = 0;
+  for (const row of byStatus) {
+    bookingsByStatus[row.status] = row._count._all;
+    totalBookings += row._count._all;
+  }
+
+  // Revenue by month (last 6).
+  const monthKeys = recentMonthKeys(6);
+  const revByMonth = new Map(monthKeys.map((k) => [k, { revenue: 0, bookings: 0 }]));
+  for (const b of realized) {
+    const key = `${b.createdAt.getUTCFullYear()}-${String(b.createdAt.getUTCMonth() + 1).padStart(2, '0')}`;
+    const bucket = revByMonth.get(key);
+    if (bucket) {
+      bucket.revenue = Math.round((bucket.revenue + Number(b.total)) * 1000) / 1000;
+      bucket.bookings += 1;
+    }
+  }
+  const revenueByMonth = monthKeys.map((month) => ({ month, ...revByMonth.get(month)! }));
+
+  // Top offerings by realized revenue (join names/categories for the top 6).
+  const sortedItems = [...topItems]
+    .map((r) => ({ offeringId: r.offeringId, revenue: Number(r._sum.unitPrice ?? 0), bookings: r._count._all }))
+    .sort((a, b) => b.revenue - a.revenue)
+    .slice(0, 6);
+  const offerings = await prisma.serviceOffering.findMany({
+    where: { id: { in: sortedItems.map((i) => i.offeringId) } },
+    select: { id: true, name: true, category: true },
+  });
+  const offMap = new Map(offerings.map((o) => [o.id, o]));
+  const topOfferings = sortedItems.map((i) => {
+    const o = offMap.get(i.offeringId);
+    return {
+      offeringId: i.offeringId,
+      name: (o?.name ?? {}) as Record<string, string>,
+      category: (o?.category ?? 'HALL') as ServiceCategory,
+      revenue: Math.round(i.revenue * 1000) / 1000,
+      bookings: i.bookings,
+    };
+  });
+
+  const ratingsMap = new Map(ratingRows.map((r) => [r.rating, r._count._all]));
+  const ratingsDistribution = [1, 2, 3, 4, 5].map((rating) => ({
+    rating,
+    count: ratingsMap.get(rating) ?? 0,
+  }));
+
+  return {
+    kpis: {
+      confirmedRevenue: revenueAgg._sum.total ? Number(revenueAgg._sum.total) : 0,
+      totalBookings,
+      customers: customerCount,
+      avgRating: Math.round((ratingAgg._avg.rating ?? 0) * 10) / 10,
+      reviewCount: ratingAgg._count._all,
+      activeOfferings: offeringCount,
+    },
+    revenueByMonth,
+    bookingsByStatus,
+    topOfferings,
+    ratingsDistribution,
+  };
+}

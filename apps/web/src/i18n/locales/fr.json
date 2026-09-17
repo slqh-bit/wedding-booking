@@ -20,6 +20,18 @@
     "servicesSubtitle": "Tout ce qu’il faut pour un événement parfait, au même endroit",
     "stepsTitle": "Planifiez votre fête en 11 étapes simples"
   },
+  "analytics": {
+    "title": "Analyses",
+    "revenue": "Revenus confirmés",
+    "bookings": "Total réservations",
+    "customers": "Clients",
+    "activeOfferings": "Services actifs",
+    "satisfaction": "Satisfaction client",
+    "statusMix": "Répartition des réservations",
+    "revenueTrend": "Revenus par mois",
+    "topOfferings": "Meilleures ventes",
+    "x": "rés."
+  },
   "adminPkg": {
     "new": "Nouveau pack",
     "edit": "Modifier le pack",

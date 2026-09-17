@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
 import cors from 'cors';
 import express, { type Express } from 'express';
 import helmet from 'helmet';
@@ -18,7 +20,9 @@ import { adminRouter } from './admin/admin.routes.js';
 export function createApp(): Express {
   const app = express();
 
-  app.use(helmet());
+  // When the API also serves the built PWA, disable helmet's default CSP so the
+  // app's Google Fonts + inline styles load (a tuned CSP can come later).
+  app.use(helmet({ contentSecurityPolicy: env.SERVE_WEB ? false : undefined }));
   app.use(
     cors({
       origin: env.WEB_ORIGIN.split(',').map((s) => s.trim()),
@@ -58,6 +62,19 @@ export function createApp(): Express {
   app.use('/api/v1/reviews', reviewsRouter);
   app.use('/api/v1/packages', packagesRouter);
   app.use('/api/v1/admin', adminRouter);
+
+  // Single-service deploy: serve the built PWA and fall back to index.html for
+  // client-side routes (anything that isn't an API path or the health check).
+  if (env.SERVE_WEB) {
+    const webDist = env.WEB_DIST_DIR
+      ? path.resolve(env.WEB_DIST_DIR)
+      : path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../web/dist');
+    app.use(express.static(webDist));
+    app.get('*', (req, res, next) => {
+      if (req.path.startsWith('/api') || req.path === '/health') return next();
+      res.sendFile(path.join(webDist, 'index.html'));
+    });
+  }
 
   app.use((_req, res) => {
     res.status(404).json({ error: { code: 'not_found', message: 'Route not found' } });

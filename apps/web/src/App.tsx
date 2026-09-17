@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { Home } from './pages/Home';
+import { Browse } from './pages/Browse';
 import { Planner } from './pages/planner/Planner';
 import { Confirmation } from './pages/Confirmation';
 import { Account } from './pages/Account';
@@ -18,6 +19,7 @@ export function App() {
     <Routes>
       <Route element={<Layout />}>
         <Route index element={<Home />} />
+        <Route path="browse" element={<Browse />} />
         <Route path="plan" element={<Planner />} />
         <Route path="confirmation" element={<Confirmation />} />
         <Route path="payment/return" element={<PaymentReturn />} />

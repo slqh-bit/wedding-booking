@@ -134,6 +134,26 @@ export const adminVendorCreateSchema = z.object({
 });
 export type AdminVendorCreateInput = z.infer<typeof adminVendorCreateSchema>;
 
+// ── Catalog search (Phase 3 slice 4) ────────────────────
+export const sortKeySchema = z.enum(['price_asc', 'price_desc', 'rating_desc', 'newest']);
+export type SortKey = z.infer<typeof sortKeySchema>;
+
+/**
+ * Public catalog search/filter. All fields optional — query strings arrive as
+ * strings, so numbers are coerced. Bounds are clamped for a sane page size.
+ */
+export const searchQuerySchema = z.object({
+  q: z.string().trim().max(120).optional(),
+  category: categorySchema.optional(),
+  minPrice: z.coerce.number().nonnegative().optional(),
+  maxPrice: z.coerce.number().nonnegative().optional(),
+  minRating: z.coerce.number().min(0).max(5).optional(),
+  sort: sortKeySchema.default('newest'),
+  page: z.coerce.number().int().min(1).default(1),
+  pageSize: z.coerce.number().int().min(1).max(48).default(12),
+});
+export type SearchQuery = z.infer<typeof searchQuerySchema>;
+
 // ── Reviews (Phase 3 slice 3) ───────────────────────────
 export const reviewStatusSchema = z.enum(['PUBLISHED', 'HIDDEN']);
 

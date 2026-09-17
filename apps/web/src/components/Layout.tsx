@@ -28,6 +28,9 @@ export function Layout() {
             <NavLink to="/" end className={navLinkClass}>
               {t('nav.home')}
             </NavLink>
+            <NavLink to="/browse" className={navLinkClass}>
+              {t('nav.browse')}
+            </NavLink>
             <NavLink to="/plan" className={navLinkClass}>
               {t('nav.plan')}
             </NavLink>
@@ -79,6 +82,9 @@ export function Layout() {
             <div className="flex flex-col gap-3">
               <NavLink to="/" end className={navLinkClass} onClick={() => setOpen(false)}>
                 {t('nav.home')}
+              </NavLink>
+              <NavLink to="/browse" className={navLinkClass} onClick={() => setOpen(false)}>
+                {t('nav.browse')}
               </NavLink>
               <NavLink to="/plan" className={navLinkClass} onClick={() => setOpen(false)}>
                 {t('nav.plan')}

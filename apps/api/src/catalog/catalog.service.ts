@@ -1,4 +1,12 @@
-import { CATEGORY_META, CATEGORY_ORDER, type CategoryDTO, type ServiceCategory } from '@hafalati/shared';
+import {
+  CATEGORY_META,
+  CATEGORY_ORDER,
+  type CategoryDTO,
+  type OfferingDTO,
+  type Paginated,
+  type SearchQuery,
+  type ServiceCategory,
+} from '@hafalati/shared';
 import type { Prisma } from '@prisma/client';
 import { prisma } from '../db.js';
 import { AppError } from '../http/errors.js';
@@ -57,6 +65,76 @@ export async function getOffering(id: string) {
   }
   const ratings = await offeringRatings([offering.id]);
   return toOfferingDTO(offering, ratings.get(offering.id));
+}
+
+/** Lowercased text of every locale in a LocalizedString JSON blob. */
+function localizedText(json: unknown): string {
+  const v = (json ?? {}) as Record<string, unknown>;
+  return [v.ar, v.fr, v.en]
+    .filter((s): s is string => typeof s === 'string')
+    .join(' ')
+    .toLowerCase();
+}
+
+/**
+ * Public catalog search. DB filters what it can (visibility, category, price);
+ * ratings, free-text match, min-rating and rating sort are applied in app
+ * (the public catalog is small, and rating is an aggregate of a relation).
+ * Returns a paginated slice with the same rating-enriched OfferingDTO.
+ */
+export async function searchOfferings(params: SearchQuery): Promise<Paginated<OfferingDTO>> {
+  const priceFilter: Prisma.DecimalFilter = {};
+  if (params.minPrice !== undefined) priceFilter.gte = params.minPrice;
+  if (params.maxPrice !== undefined) priceFilter.lte = params.maxPrice;
+
+  const rows = await prisma.serviceOffering.findMany({
+    where: {
+      ...PUBLIC_OFFERING_WHERE,
+      ...(params.category ? { category: params.category as ServiceCategory } : {}),
+      ...(params.minPrice !== undefined || params.maxPrice !== undefined
+        ? { basePrice: priceFilter }
+        : {}),
+    },
+    include: { vendor: { select: { name: true } } },
+  });
+
+  const ratings = await offeringRatings(rows.map((o) => o.id));
+
+  // Free-text (any locale, name + description) + minimum rating.
+  const q = params.q?.trim().toLowerCase();
+  let items = rows
+    .map((o) => ({ row: o, rating: ratings.get(o.id) ?? { avg: 0, count: 0 } }))
+    .filter(({ row }) => {
+      if (!q) return true;
+      return localizedText(row.name).includes(q) || localizedText(row.description).includes(q);
+    })
+    .filter(({ rating }) => (params.minRating ? rating.avg >= params.minRating : true));
+
+  // Sort.
+  items.sort((a, b) => {
+    switch (params.sort) {
+      case 'price_asc':
+        return Number(a.row.basePrice) - Number(b.row.basePrice);
+      case 'price_desc':
+        return Number(b.row.basePrice) - Number(a.row.basePrice);
+      case 'rating_desc':
+        return b.rating.avg - a.rating.avg || b.rating.count - a.rating.count;
+      case 'newest':
+      default:
+        return b.row.createdAt.getTime() - a.row.createdAt.getTime();
+    }
+  });
+
+  const total = items.length;
+  const start = (params.page - 1) * params.pageSize;
+  const pageItems = items.slice(start, start + params.pageSize);
+
+  return {
+    data: pageItems.map(({ row, rating }) => toOfferingDTO(row, rating)),
+    total,
+    page: params.page,
+    pageSize: params.pageSize,
+  };
 }
 
 /** Availability for a given month (YYYY-MM) for a date-bound offering. */

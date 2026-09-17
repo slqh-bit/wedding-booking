@@ -20,6 +20,22 @@
     "servicesSubtitle": "Everything you need for a perfect event, in one place",
     "stepsTitle": "Plan your event in 11 easy steps"
   },
+  "adminPkg": {
+    "new": "New package",
+    "edit": "Edit package",
+    "name": "Name",
+    "description": "Description",
+    "discount": "Discount",
+    "active": "Active",
+    "inactive": "Inactive",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "selectServices": "Select services",
+    "needTwo": "Select at least two services",
+    "saved": "Saved",
+    "deleted": "Deleted",
+    "deleteConfirm": "Delete this package?"
+  },
   "packages": {
     "title": "Ready-made packages",
     "subtitle": "Hand-picked bundles at a discount — everything for your event in one offer",

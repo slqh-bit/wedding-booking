@@ -212,11 +212,15 @@ function BrowseCard({ offering, locale }: { offering: OfferingDTO; locale: Local
   const meta = CATEGORY_META[offering.category];
   return (
     <div className="surface group flex flex-col overflow-hidden">
-      <div
-        className={`flex h-28 items-center justify-center bg-gradient-to-br ${meta.theme.gradientFrom} ${meta.theme.gradientTo} text-4xl`}
-      >
-        {offering.emoji}
-      </div>
+      {offering.imageUrls[0] ? (
+        <img src={offering.imageUrls[0]} alt="" className="h-28 w-full object-cover" />
+      ) : (
+        <div
+          className={`flex h-28 items-center justify-center bg-gradient-to-br ${meta.theme.gradientFrom} ${meta.theme.gradientTo} text-4xl`}
+        >
+          {offering.emoji}
+        </div>
+      )}
       <div className="flex flex-1 flex-col p-3.5">
         <span
           className={`mb-1 inline-flex w-fit rounded-full px-2 py-0.5 text-[10px] font-medium ${meta.theme.badgeBg} ${meta.theme.badgeText}`}

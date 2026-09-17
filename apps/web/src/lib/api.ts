@@ -136,6 +136,26 @@ export async function downloadFile(path: string, filename: string): Promise<void
   URL.revokeObjectURL(url);
 }
 
+/** Upload a single file as multipart/form-data (auth), returning JSON. */
+export async function uploadFile<T>(path: string, file: File): Promise<T> {
+  const form = new FormData();
+  form.append('file', file);
+  const doFetch = () =>
+    fetch(`${BASE_URL}${path}`, {
+      method: 'POST',
+      headers: tokenStore.access ? { Authorization: `Bearer ${tokenStore.access}` } : {},
+      body: form,
+    });
+  let res = await doFetch();
+  if (res.status === 401 && (await tryRefresh())) res = await doFetch();
+  const data = (await res.json().catch(() => null)) as T | { error?: { code: string; message: string } };
+  if (!res.ok) {
+    const e = (data as { error?: { code: string; message: string } })?.error;
+    throw new ApiRequestError(res.status, e?.code ?? 'upload_failed', e?.message ?? 'Upload failed');
+  }
+  return data as T;
+}
+
 export const api = {
   get: <T>(path: string, auth = false) => rawRequest<T>(path, { method: 'GET', auth }),
   post: <T>(path: string, body?: unknown, auth = false) =>

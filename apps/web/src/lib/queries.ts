@@ -14,7 +14,7 @@ import type {
   VendorDTO,
   VendorEarningsResponse,
 } from '@hafalati/shared';
-import { api, downloadFile } from './api.js';
+import { api, downloadFile, uploadFile } from './api.js';
 
 export interface PlatformInfo {
   name: string;
@@ -101,6 +101,9 @@ export const endpoints = {
       .then((r) => r.data),
   setOfferingModeration: (id: string, status: string) =>
     api.patch<OfferingDTO>(`/admin/offerings/${id}/moderation`, { status }, true),
+
+  // Image upload (vendor/admin) — returns a relative /uploads/... URL.
+  uploadImage: (file: File) => uploadFile<{ url: string }>('/uploads', file),
 
   // Vendor dashboard
   registerVendor: (body: Record<string, unknown>) =>

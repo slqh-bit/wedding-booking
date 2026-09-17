@@ -12,8 +12,9 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      // Dev convenience: proxy API calls so the PWA + API share an origin.
+      // Dev convenience: proxy API + uploaded images so the PWA + API share an origin.
       '/api': { target: 'http://localhost:4000', changeOrigin: true },
+      '/uploads': { target: 'http://localhost:4000', changeOrigin: true },
     },
   },
   plugins: [

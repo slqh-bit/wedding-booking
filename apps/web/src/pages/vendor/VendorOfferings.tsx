@@ -23,7 +23,7 @@ export function VendorOfferings() {
 
   const save = useMutation({
     mutationFn: (v: OfferingFormValue) => {
-      const body = { ...v, attributes: {}, imageUrls: [] };
+      const body = { ...v, attributes: {} };
       return editing
         ? endpoints.updateVendorOffering(editing.id, body)
         : endpoints.createVendorOffering(body);
@@ -90,7 +90,11 @@ export function VendorOfferings() {
       <div className="space-y-2.5">
         {data?.map((o) => (
           <div key={o.id} className="surface flex flex-wrap items-center gap-3 p-3.5">
-            <span className="text-2xl">{o.emoji}</span>
+            {o.imageUrls[0] ? (
+              <img src={o.imageUrls[0]} alt="" className="h-11 w-11 rounded-xl object-cover" />
+            ) : (
+              <span className="text-2xl">{o.emoji}</span>
+            )}
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-semibold text-blush-900">{loc(o.name, locale)}</p>
               <p className="text-[11px] text-blush-400">{money(o.basePrice, locale)}</p>

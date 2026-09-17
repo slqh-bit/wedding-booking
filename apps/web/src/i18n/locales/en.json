@@ -20,6 +20,12 @@
     "servicesSubtitle": "Everything you need for a perfect event, in one place",
     "stepsTitle": "Plan your event in 11 easy steps"
   },
+  "offeringImg": {
+    "title": "Service photos",
+    "add": "Add image",
+    "hint": "JPEG · PNG · WebP — up to 5 MB",
+    "failed": "Image upload failed"
+  },
   "analytics": {
     "title": "Analytics",
     "revenue": "Confirmed revenue",

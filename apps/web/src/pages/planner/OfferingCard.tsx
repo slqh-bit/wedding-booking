@@ -27,11 +27,19 @@ export function OfferingCard({ offering, selected, onSelect }: Props) {
           ✓
         </span>
       )}
-      <div
-        className={`flex h-32 items-center justify-center bg-gradient-to-br ${meta.theme.gradientFrom} ${meta.theme.gradientTo} text-5xl transition-transform duration-300 group-hover:scale-105`}
-      >
-        {offering.emoji}
-      </div>
+      {offering.imageUrls[0] ? (
+        <img
+          src={offering.imageUrls[0]}
+          alt=""
+          className="h-32 w-full object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+      ) : (
+        <div
+          className={`flex h-32 items-center justify-center bg-gradient-to-br ${meta.theme.gradientFrom} ${meta.theme.gradientTo} text-5xl transition-transform duration-300 group-hover:scale-105`}
+        >
+          {offering.emoji}
+        </div>
+      )}
       <div className="p-4">
         <h4 className="font-display text-base font-bold text-blush-900">{loc(offering.name, locale)}</h4>
         {offering.ratingCount > 0 && (

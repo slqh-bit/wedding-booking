@@ -3,6 +3,7 @@
   "nav": {
     "home": "Home",
     "services": "Services",
+    "browse": "Browse",
     "plan": "Plan your event",
     "account": "My account",
     "admin": "Admin",
@@ -17,6 +18,26 @@
     "servicesTitle": "Our all-in-one services",
     "servicesSubtitle": "Everything you need for a perfect event, in one place",
     "stepsTitle": "Plan your event in 11 easy steps"
+  },
+  "browse": {
+    "title": "Browse services",
+    "subtitle": "Search and compare every service by category, price and rating",
+    "searchPlaceholder": "Search a service…",
+    "all": "All",
+    "price": "Price (TND)",
+    "from": "From",
+    "to": "To",
+    "minRating": "Min rating",
+    "sort": "Sort",
+    "sortNewest": "Newest",
+    "sortPriceAsc": "Price: low to high",
+    "sortPriceDesc": "Price: high to low",
+    "sortRating": "Top rated",
+    "results": "result(s)",
+    "empty": "No matches. Try adjusting your filters.",
+    "loadMore": "Load more",
+    "clear": "Clear filters",
+    "any": "Any"
   },
   "wizard": {
     "next": "Next",

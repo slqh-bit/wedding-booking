@@ -3,6 +3,7 @@
   "nav": {
     "home": "Accueil",
     "services": "Services",
+    "browse": "Parcourir",
     "plan": "Planifier",
     "account": "Mon compte",
     "admin": "Administration",
@@ -17,6 +18,26 @@
     "servicesTitle": "Nos services intégrés",
     "servicesSubtitle": "Tout ce qu’il faut pour un événement parfait, au même endroit",
     "stepsTitle": "Planifiez votre fête en 11 étapes simples"
+  },
+  "browse": {
+    "title": "Parcourir les services",
+    "subtitle": "Recherchez et comparez tous les services par catégorie, prix et note",
+    "searchPlaceholder": "Rechercher un service…",
+    "all": "Tout",
+    "price": "Prix (DT)",
+    "from": "De",
+    "to": "À",
+    "minRating": "Note minimale",
+    "sort": "Trier",
+    "sortNewest": "Les plus récents",
+    "sortPriceAsc": "Prix : croissant",
+    "sortPriceDesc": "Prix : décroissant",
+    "sortRating": "Les mieux notés",
+    "results": "résultat(s)",
+    "empty": "Aucun résultat. Ajustez vos filtres.",
+    "loadMore": "Voir plus",
+    "clear": "Effacer les filtres",
+    "any": "Tout"
   },
   "wizard": {
     "next": "Suivant",

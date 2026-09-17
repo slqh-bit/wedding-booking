@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { CATEGORY_ORDER, type ServiceCategory } from '@hafalati/shared';
+import { CATEGORY_ORDER, searchQuerySchema, type ServiceCategory } from '@hafalati/shared';
 import { asyncHandler, AppError } from '../http/errors.js';
 import { param } from '../http/params.js';
 import * as catalog from './catalog.service.js';
@@ -23,6 +23,14 @@ catalogRouter.get(
     }
     const data = await catalog.listOfferings(category as ServiceCategory | undefined);
     res.json({ data });
+  }),
+);
+
+catalogRouter.get(
+  '/search',
+  asyncHandler(async (req, res) => {
+    const params = searchQuerySchema.parse(req.query);
+    res.json(await catalog.searchOfferings(params));
   }),
 );
 

@@ -6,6 +6,7 @@ import type {
   CreateBookingInput,
   NotificationDTO,
   OfferingDTO,
+  Paginated,
   PayoutSummaryDTO,
   ReviewDTO,
   VendorDTO,
@@ -27,6 +28,13 @@ export const endpoints = {
   categories: () => api.get<{ data: CategoryDTO[] }>('/categories').then((r) => r.data),
   offerings: (category: string) =>
     api.get<{ data: OfferingDTO[] }>(`/offerings?category=${category}`).then((r) => r.data),
+  searchOfferings: (params: Record<string, string | number | undefined>) => {
+    const qs = new URLSearchParams();
+    for (const [k, v] of Object.entries(params)) {
+      if (v !== undefined && v !== '') qs.set(k, String(v));
+    }
+    return api.get<Paginated<OfferingDTO>>(`/search?${qs.toString()}`);
+  },
 
   login: (email: string, password: string) =>
     api.post<AuthResponse>('/auth/login', { email, password }),

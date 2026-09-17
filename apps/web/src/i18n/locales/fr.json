@@ -4,6 +4,7 @@
     "home": "Accueil",
     "services": "Services",
     "browse": "Parcourir",
+    "packages": "Packs",
     "plan": "Planifier",
     "account": "Mon compte",
     "admin": "Administration",
@@ -18,6 +19,14 @@
     "servicesTitle": "Nos services intégrés",
     "servicesSubtitle": "Tout ce qu’il faut pour un événement parfait, au même endroit",
     "stepsTitle": "Planifiez votre fête en 11 étapes simples"
+  },
+  "packages": {
+    "title": "Packs prêts à réserver",
+    "subtitle": "Des packs soigneusement composés à prix réduit — tout pour votre événement en une offre",
+    "empty": "Aucun pack disponible pour le moment.",
+    "book": "Réserver le pack",
+    "save": "Économie",
+    "dateUnavailable": "La date choisie n’est pas disponible pour un élément du pack"
   },
   "browse": {
     "title": "Parcourir les services",

@@ -120,6 +120,7 @@ async function main() {
   await prisma.payment.deleteMany();
   await prisma.invoice.deleteMany();
   await prisma.booking.deleteMany();
+  await prisma.package.deleteMany();
   await prisma.serviceOffering.deleteMany();
   await prisma.vendor.deleteMany();
   await prisma.user.deleteMany();
@@ -357,8 +358,75 @@ async function main() {
     }
   }
 
+  // ── Curated promo packages (Phase 3 slice 5) ────────────
+  async function platformOffering(category: ServiceCategory) {
+    return prisma.serviceOffering.findFirst({
+      where: { category, vendor: { isPlatformOwned: true } },
+      orderBy: { basePrice: 'asc' },
+    });
+  }
+
+  async function makePackage(opts: {
+    name: Record<string, string>;
+    description: Record<string, string>;
+    emoji: string;
+    discountRate: number;
+    categories: ServiceCategory[];
+  }) {
+    const offerings = (await Promise.all(opts.categories.map(platformOffering))).filter(
+      (o): o is NonNullable<typeof o> => o !== null,
+    );
+    if (offerings.length < 2) return;
+    await prisma.package.create({
+      data: {
+        name: opts.name as unknown as Prisma.InputJsonValue,
+        description: opts.description as unknown as Prisma.InputJsonValue,
+        emoji: opts.emoji,
+        discountRate: new Prisma.Decimal(opts.discountRate),
+        isActive: true,
+        items: { create: offerings.map((o) => ({ offeringId: o.id })) },
+      },
+    });
+  }
+
+  await makePackage({
+    emoji: '👰',
+    discountRate: 0.15,
+    categories: ['HALL', 'PHOTOGRAPHY', 'DECOR', 'BEAUTY'],
+    name: { ar: 'باقة العروس الكاملة', fr: 'Pack Mariée Complet', en: 'Complete Bride Package' },
+    description: {
+      ar: 'قاعة + تصوير + ديكور + تجميل بخصم 15٪',
+      fr: 'Salle + photo + décor + beauté, −15 %',
+      en: 'Hall + photography + decor + beauty, 15% off',
+    },
+  });
+
+  await makePackage({
+    emoji: '💍',
+    discountRate: 0.1,
+    categories: ['HALL', 'CATERING', 'CAKE', 'FLOWERS'],
+    name: { ar: 'باقة الخطوبة', fr: 'Pack Fiançailles', en: 'Engagement Package' },
+    description: {
+      ar: 'قاعة + ضيافة + كيك + زهور بخصم 10٪',
+      fr: 'Salle + traiteur + gâteau + fleurs, −10 %',
+      en: 'Hall + catering + cake + flowers, 10% off',
+    },
+  });
+
+  await makePackage({
+    emoji: '✨',
+    discountRate: 0.12,
+    categories: ['HALL', 'PHOTOGRAPHY', 'MUSIC'],
+    name: { ar: 'الباقة الأساسية', fr: 'Pack Essentiel', en: 'Essential Package' },
+    description: {
+      ar: 'قاعة + تصوير + موسيقى بخصم 12٪',
+      fr: 'Salle + photo + musique, −12 %',
+      en: 'Hall + photography + music, 12% off',
+    },
+  });
+
   console.log(
-    `✅ Seed complete: ${offeringCount} platform offerings + 2 demo vendors across ${Object.keys(CATALOG).length} categories.`,
+    `✅ Seed complete: ${offeringCount} platform offerings + 2 demo vendors + 3 promo packages across ${Object.keys(CATALOG).length} categories.`,
   );
   console.log('   Admin:    admin@hafalati.tn / Admin1234');
   console.log('   Vendor:   vendor@hafalati.tn / Vendor1234 (approved), vendor2@hafalati.tn / Vendor1234 (pending)');

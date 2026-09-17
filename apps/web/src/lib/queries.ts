@@ -6,6 +6,7 @@ import type {
   CreateBookingInput,
   NotificationDTO,
   OfferingDTO,
+  PackageDTO,
   Paginated,
   PayoutSummaryDTO,
   ReviewDTO,
@@ -121,6 +122,15 @@ export const endpoints = {
   adminPayouts: () => api.get<{ data: PayoutSummaryDTO[] }>('/admin/payouts', true).then((r) => r.data),
   settleVendorPayout: (vendorId: string) =>
     api.post<VendorEarningsResponse>(`/admin/payouts/${vendorId}/settle`, undefined, true),
+
+  // Promo packages (Phase 3 slice 5)
+  packages: () => api.get<{ data: PackageDTO[] }>('/packages').then((r) => r.data),
+  getPackage: (id: string) => api.get<PackageDTO>(`/packages/${id}`),
+  adminPackages: () => api.get<{ data: PackageDTO[] }>('/admin/packages', true).then((r) => r.data),
+  createPackage: (body: Record<string, unknown>) => api.post<PackageDTO>('/admin/packages', body, true),
+  updatePackage: (id: string, body: Record<string, unknown>) =>
+    api.patch<PackageDTO>(`/admin/packages/${id}`, body, true),
+  deletePackage: (id: string) => api.delete<unknown>(`/admin/packages/${id}`),
 
   // Reviews & ratings (Phase 3 slice 3)
   offeringReviews: (offeringId: string) =>

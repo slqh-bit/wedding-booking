@@ -123,6 +123,23 @@ export interface NotificationDTO {
   sentAt: string | null;
 }
 
+export interface PackageDTO {
+  id: string;
+  name: LocalizedString;
+  description: LocalizedString;
+  emoji: string;
+  imageUrl: string | null;
+  discountRate: number;
+  isActive: boolean;
+  offerings: OfferingDTO[];
+  /** Sum of the included offerings' base prices (TND). */
+  originalTotal: number;
+  /** originalTotal × (1 − discountRate), millime precision. */
+  discountedTotal: number;
+  /** originalTotal − discountedTotal. */
+  savings: number;
+}
+
 export interface ReviewDTO {
   id: string;
   offeringId: string;

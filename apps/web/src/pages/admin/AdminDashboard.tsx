@@ -12,9 +12,11 @@ import { AdminModeration } from './AdminModeration';
 import { AdminPayouts } from './AdminPayouts';
 import { AdminReviews } from './AdminReviews';
 import { AdminPackages } from './AdminPackages';
+import { AdminAnalytics } from './AdminAnalytics';
 
 type Tab =
   | 'dashboard'
+  | 'analytics'
   | 'bookings'
   | 'offerings'
   | 'vendors'
@@ -31,6 +33,7 @@ export function AdminDashboard() {
 
   const tabs: { id: Tab; label: string }[] = [
     { id: 'dashboard', label: t('admin.dashboard') },
+    { id: 'analytics', label: t('analytics.title') },
     { id: 'bookings', label: t('admin.bookings') },
     { id: 'offerings', label: t('admin.offerings') },
     { id: 'vendors', label: t('adminMarket.vendors') },
@@ -62,6 +65,7 @@ export function AdminDashboard() {
       <OrnamentDivider />
 
       {tab === 'dashboard' && <AdminStatsCards stats={stats} />}
+      {tab === 'analytics' && <AdminAnalytics />}
       {tab === 'bookings' && <AdminBookings />}
       {tab === 'offerings' && <AdminOfferings />}
       {tab === 'vendors' && <AdminVendors />}

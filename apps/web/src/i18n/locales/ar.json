@@ -20,6 +20,18 @@
     "servicesSubtitle": "كل ما تحتاجه لتنظيم مناسبة مثالية في مكان واحد",
     "stepsTitle": "خطّط حفلتك في 11 خطوة سهلة"
   },
+  "analytics": {
+    "title": "التحليلات",
+    "revenue": "الإيرادات المؤكّدة",
+    "bookings": "إجمالي الحجوزات",
+    "customers": "العملاء",
+    "activeOfferings": "خدمات نشطة",
+    "satisfaction": "رضا العملاء",
+    "statusMix": "توزيع الحجوزات",
+    "revenueTrend": "الإيرادات حسب الشهر",
+    "topOfferings": "الأكثر مبيعاً",
+    "x": "حجز"
+  },
   "adminPkg": {
     "new": "باقة جديدة",
     "edit": "تعديل الباقة",

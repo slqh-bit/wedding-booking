@@ -182,6 +182,29 @@ export interface VendorEarningsResponse {
   totals: { gross: number; commission: number; net: number; pendingNet: number; paidNet: number };
 }
 
+export interface AnalyticsDTO {
+  kpis: {
+    confirmedRevenue: number;
+    totalBookings: number;
+    customers: number;
+    avgRating: number;
+    reviewCount: number;
+    activeOfferings: number;
+  };
+  /** Confirmed/completed booking revenue bucketed by month (oldest → newest). */
+  revenueByMonth: { month: string; revenue: number; bookings: number }[];
+  bookingsByStatus: Record<string, number>;
+  topOfferings: {
+    offeringId: string;
+    name: LocalizedString;
+    category: ServiceCategory;
+    revenue: number;
+    bookings: number;
+  }[];
+  /** Published-review counts per star, 1 → 5. */
+  ratingsDistribution: { rating: number; count: number }[];
+}
+
 export interface ApiError {
   error: {
     code: string;

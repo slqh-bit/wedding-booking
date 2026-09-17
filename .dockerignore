@@ -1,0 +1,21 @@
+# Rebuilt inside the image — never copy host artifacts in.
+**/node_modules
+**/dist
+**/dev-dist
+.git
+.github
+*.log
+
+# Secrets / local env (only .env.example is safe, and it isn't needed in the image).
+.env
+.env.*
+
+# Local infra + docs not needed at runtime.
+docker-compose.yml
+*.md
+!DEPLOY.md
+
+# Test + tooling noise.
+coverage
+.vscode
+.idea

@@ -4,7 +4,14 @@ import { z } from 'zod';
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   API_PORT: z.coerce.number().default(4000),
+  // Hosting platforms (Railway, Render, …) inject PORT; it wins over API_PORT.
+  PORT: z.coerce.number().optional(),
   DATABASE_URL: z.string().url(),
+
+  // Single-service deploy: when true, the API also serves the built web PWA
+  // (same-origin, no CORS). WEB_DIST_DIR overrides where the static build lives.
+  SERVE_WEB: z.coerce.boolean().default(false),
+  WEB_DIST_DIR: z.string().optional(),
 
   JWT_ACCESS_SECRET: z.string().min(16),
   JWT_REFRESH_SECRET: z.string().min(16),
@@ -79,6 +86,9 @@ const raw = {
 };
 
 export const env = envSchema.parse(raw);
+
+/** The port to bind: the platform-provided PORT, else API_PORT. */
+export const port = env.PORT ?? env.API_PORT;
 
 export const fiscalConfig = {
   tvaRate: env.TVA_RATE,

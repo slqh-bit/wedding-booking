@@ -20,6 +20,22 @@
     "servicesSubtitle": "Tout ce qu’il faut pour un événement parfait, au même endroit",
     "stepsTitle": "Planifiez votre fête en 11 étapes simples"
   },
+  "adminPkg": {
+    "new": "Nouveau pack",
+    "edit": "Modifier le pack",
+    "name": "Nom",
+    "description": "Description",
+    "discount": "Remise",
+    "active": "Actif",
+    "inactive": "Inactif",
+    "activate": "Activer",
+    "deactivate": "Désactiver",
+    "selectServices": "Choisir les services",
+    "needTwo": "Choisissez au moins deux services",
+    "saved": "Enregistré",
+    "deleted": "Supprimé",
+    "deleteConfirm": "Supprimer ce pack ?"
+  },
   "packages": {
     "title": "Packs prêts à réserver",
     "subtitle": "Des packs soigneusement composés à prix réduit — tout pour votre événement en une offre",

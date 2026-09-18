@@ -1,6 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { CATEGORY_META, type Locale, type OfferingDTO, type ServiceCategory } from '@hafalati/shared';
+import {
+  CATEGORY_META,
+  CATEGORY_ORDER,
+  type Locale,
+  type OfferingDTO,
+  type ServiceCategory,
+} from '@hafalati/shared';
 import { endpoints } from '@/lib/queries';
 import { CardGridSkeleton } from '@/design/Skeleton';
 import { GoldButton } from '@/design/GoldButton';
@@ -14,7 +20,7 @@ export function StepCategory({ category }: { category: ServiceCategory }) {
   const { t, i18n } = useTranslation();
   const locale = i18n.language as Locale;
   const meta = CATEGORY_META[category];
-  const { selections, select, clearSelection, next, prev, step } = useWizard();
+  const { selections, select, clearSelection, next, goto, totalSteps, prev, step } = useWizard();
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['offerings', category],
@@ -26,8 +32,9 @@ export function StepCategory({ category }: { category: ServiceCategory }) {
   /**
    * Tap-to-select with auto-advance:
    *  - tapping the already-selected card toggles it off (no advance);
-   *  - a fresh pick (category had no selection) advances to the next step
-   *    after a beat so the checkmark registers;
+   *  - a fresh pick (category had no selection) advances after a beat so the
+   *    checkmark registers — and if that pick fills the LAST empty category,
+   *    it skips straight to the Summary;
    *  - changing a pick on a category you returned to just updates it, no jump.
    */
   function onCardTap(offering: OfferingDTO) {
@@ -37,7 +44,10 @@ export function StepCategory({ category }: { category: ServiceCategory }) {
     }
     const wasFresh = !selectedId;
     select(offering);
-    if (wasFresh) window.setTimeout(() => next(), 260);
+    if (!wasFresh) return;
+    // After this pick, is every category chosen? (this one counts as picked)
+    const allPicked = CATEGORY_ORDER.every((c) => c === category || Boolean(selections[c]));
+    window.setTimeout(() => (allPicked ? goto(totalSteps) : next()), 260);
   }
 
   return (

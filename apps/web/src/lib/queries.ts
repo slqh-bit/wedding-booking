@@ -3,6 +3,7 @@ import type {
   AnalyticsDTO,
   AuthResponse,
   BookingDTO,
+  CategoryConfigDTO,
   CategoryDTO,
   CreateBookingInput,
   NotificationDTO,
@@ -28,8 +29,16 @@ export interface PlatformInfo {
 export const endpoints = {
   platform: () => api.get<PlatformInfo>('/platform'),
   categories: () => api.get<{ data: CategoryDTO[] }>('/categories').then((r) => r.data),
-  offerings: (category: string) =>
-    api.get<{ data: OfferingDTO[] }>(`/offerings?category=${category}`).then((r) => r.data),
+  offerings: (category: string, date?: string) => {
+    const qs = new URLSearchParams({ category });
+    if (date) qs.set('date', date);
+    return api.get<{ data: OfferingDTO[] }>(`/offerings?${qs.toString()}`).then((r) => r.data);
+  },
+  /** Which of the given offerings are no longer bookable on a date (reserved). */
+  checkAvailability: (date: string, offeringIds: string[]) =>
+    api
+      .post<{ unavailable: string[] }>('/offerings/check-availability', { date, offeringIds })
+      .then((r) => r.unavailable),
   searchOfferings: (params: Record<string, string | number | undefined>) => {
     const qs = new URLSearchParams();
     for (const [k, v] of Object.entries(params)) {
@@ -69,6 +78,12 @@ export const endpoints = {
       .get<{ data: BookingDTO[] }>(`/admin/bookings${status ? `?status=${status}` : ''}`, true)
       .then((r) => r.data),
   adminOfferings: () => api.get<{ data: OfferingDTO[] }>('/admin/offerings', true).then((r) => r.data),
+
+  // Admin category date-limiting config
+  adminCategories: () =>
+    api.get<{ data: CategoryConfigDTO[] }>('/admin/categories', true).then((r) => r.data),
+  setCategoryLimited: (category: string, dateLimited: boolean) =>
+    api.patch<CategoryConfigDTO>(`/admin/categories/${category}`, { dateLimited }, true),
   adminNotifications: () =>
     api.get<{ data: NotificationDTO[] }>('/admin/notifications', true).then((r) => r.data),
 

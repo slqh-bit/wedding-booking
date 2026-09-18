@@ -1,7 +1,13 @@
 import { Router } from 'express';
-import { CATEGORY_ORDER, searchQuerySchema, type ServiceCategory } from '@hafalati/shared';
+import {
+  CATEGORY_ORDER,
+  checkAvailabilitySchema,
+  searchQuerySchema,
+  type ServiceCategory,
+} from '@hafalati/shared';
 import { asyncHandler, AppError } from '../http/errors.js';
 import { param } from '../http/params.js';
+import { validateBody } from '../http/validate.js';
 import * as catalog from './catalog.service.js';
 import * as reviews from '../reviews/reviews.service.js';
 
@@ -21,8 +27,21 @@ catalogRouter.get(
     if (category && !CATEGORY_ORDER.includes(category as ServiceCategory)) {
       throw AppError.badRequest('invalid_category', 'Unknown category');
     }
-    const data = await catalog.listOfferings(category as ServiceCategory | undefined);
+    const date = typeof req.query.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(req.query.date)
+      ? req.query.date
+      : undefined;
+    const data = await catalog.listOfferings(category as ServiceCategory | undefined, date);
     res.json({ data });
+  }),
+);
+
+// Re-check availability when the customer changes the event date.
+catalogRouter.post(
+  '/offerings/check-availability',
+  validateBody(checkAvailabilitySchema),
+  asyncHandler(async (req, res) => {
+    const { date, offeringIds } = req.body;
+    res.json({ unavailable: await catalog.unavailableForDate(date, offeringIds) });
   }),
 );
 

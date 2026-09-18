@@ -11,6 +11,7 @@ import argon2 from 'argon2';
 import {
   AvailabilityMode,
   CATEGORY_META,
+  CATEGORY_ORDER,
   ServiceCategory,
   isDateBound,
   type LocalizedString,
@@ -124,6 +125,15 @@ async function main() {
   await prisma.serviceOffering.deleteMany();
   await prisma.vendor.deleteMany();
   await prisma.user.deleteMany();
+
+  // Per-category settings (kept across re-seeds so admin toggles survive).
+  for (const category of CATEGORY_ORDER) {
+    await prisma.categoryConfig.upsert({
+      where: { category },
+      update: {},
+      create: { category, dateLimited: isDateBound(category) },
+    });
+  }
 
   // ── Users ───────────────────────────────────────────────
   const adminPassword = await argon2.hash('Admin1234');

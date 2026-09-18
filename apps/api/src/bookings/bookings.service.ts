@@ -1,16 +1,12 @@
 import { Prisma } from '@prisma/client';
-import {
-  computeTotals,
-  isDateBound,
-  type CreateBookingInput,
-  type ServiceCategory,
-} from '@hafalati/shared';
+import { computeTotals, type CreateBookingInput, type ServiceCategory } from '@hafalati/shared';
 import { prisma } from '../db.js';
 import { fiscalConfig } from '../env.js';
 import { AppError } from '../http/errors.js';
 import { toBookingDTO } from '../http/serialize.js';
 import { notifyBookingReceived } from '../notifications/notification.service.js';
 import { resolvePackageForBooking } from '../packages/packages.service.js';
+import { dateLimitedSet } from '../catalog/category-config.service.js';
 
 const round3 = (n: number) => Math.round(n * 1000) / 1000;
 
@@ -104,7 +100,8 @@ async function assertDatesAvailable(
   offerings: { id: string; category: string }[],
   eventDate: Date,
 ) {
-  const dateBound = offerings.filter((o) => isDateBound(o.category as ServiceCategory));
+  const limited = await dateLimitedSet();
+  const dateBound = offerings.filter((o) => limited.has(o.category as ServiceCategory));
   if (dateBound.length === 0) return;
 
   const rows = await prisma.availability.findMany({
@@ -135,24 +132,24 @@ export async function confirmBooking(userId: string, bookingId: string) {
     throw AppError.conflict('invalid_status', 'Only draft bookings can be confirmed');
   }
 
+  const limited = await dateLimitedSet();
   const dateBoundOfferingIds = booking.items
-    .filter((i) => isDateBound(i.category as ServiceCategory))
+    .filter((i) => limited.has(i.category as ServiceCategory))
     .map((i) => i.offeringId);
 
   const updated = await prisma.$transaction(async (tx) => {
-    // Re-check availability inside the transaction to avoid races.
-    if (dateBoundOfferingIds.length > 0) {
-      const rows = await tx.availability.findMany({
-        where: { offeringId: { in: dateBoundOfferingIds }, date: booking.eventDate },
-      });
-      for (const r of rows) {
-        if (r.status === 'BOOKED') {
-          throw AppError.conflict('date_unavailable', 'Selected date was just booked');
-        }
+    // Re-check + lock availability inside the transaction to avoid races. Upsert
+    // so the date is locked even when no availability row was pre-created.
+    for (const offeringId of dateBoundOfferingIds) {
+      const key = { offeringId_date: { offeringId, date: booking.eventDate } };
+      const existing = await tx.availability.findUnique({ where: key });
+      if (existing?.status === 'BOOKED') {
+        throw AppError.conflict('date_unavailable', 'Selected date was just booked');
       }
-      await tx.availability.updateMany({
-        where: { offeringId: { in: dateBoundOfferingIds }, date: booking.eventDate },
-        data: { status: 'BOOKED' },
+      await tx.availability.upsert({
+        where: key,
+        update: { status: 'BOOKED' },
+        create: { offeringId, date: booking.eventDate, status: 'BOOKED' },
       });
     }
 
@@ -191,8 +188,9 @@ export async function cancelBooking(userId: string, bookingId: string) {
     throw AppError.conflict('invalid_status', 'Booking cannot be cancelled');
   }
 
+  const limited = await dateLimitedSet();
   const dateBoundOfferingIds = booking.items
-    .filter((i) => isDateBound(i.category as ServiceCategory))
+    .filter((i) => limited.has(i.category as ServiceCategory))
     .map((i) => i.offeringId);
 
   const updated = await prisma.$transaction(async (tx) => {

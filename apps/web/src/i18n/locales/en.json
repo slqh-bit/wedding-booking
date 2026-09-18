@@ -91,7 +91,8 @@
     "step": "Step",
     "of": "of",
     "startingPrice": "From",
-    "selected": "Selected"
+    "selected": "Selected",
+    "tapToUnselect": "Tap again to unselect"
   },
   "summary": {
     "title": "Your selections",

@@ -91,7 +91,8 @@
     "step": "Étape",
     "of": "sur",
     "startingPrice": "À partir de",
-    "selected": "Sélectionné"
+    "selected": "Sélectionné",
+    "tapToUnselect": "Retapez pour désélectionner"
   },
   "summary": {
     "title": "Récapitulatif de vos choix",

@@ -91,7 +91,8 @@
     "step": "الخطوة",
     "of": "من",
     "startingPrice": "يبدأ من",
-    "selected": "تم الاختيار"
+    "selected": "تم الاختيار",
+    "tapToUnselect": "اضغط مرة أخرى للإلغاء"
   },
   "summary": {
     "title": "ملخص اختياراتك",

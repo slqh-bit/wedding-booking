@@ -41,10 +41,11 @@ export function Stepper() {
               <button
                 key={n.key}
                 onClick={() => goto(i)}
-                className="z-10 flex min-w-[52px] flex-col items-center gap-1"
+                title={n.label}
+                className="group z-10 flex min-w-[52px] flex-col items-center gap-1"
               >
                 <span
-                  className={`grid h-8 w-8 place-items-center rounded-full text-[11px] font-bold transition-all ${
+                  className={`grid h-8 w-8 place-items-center rounded-full text-[11px] font-bold transition-all group-hover:ring-2 group-hover:ring-gold-300 ${
                     active
                       ? 'bg-gold-gradient text-white shadow-gold ring-2 ring-gold-200'
                       : done || selected

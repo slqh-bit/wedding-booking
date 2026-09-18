@@ -208,6 +208,16 @@ model Availability {
   @@index([date, status])
 }
 
+/// Admin-tunable per-category settings. `dateLimited` decides whether the
+/// booking engine locks a calendar date for that category (and the wizard
+/// hides already-reserved offerings for the chosen date).
+model CategoryConfig {
+  id          String          @id @default(cuid())
+  category    ServiceCategory @unique
+  dateLimited Boolean         @default(false)
+  updatedAt   DateTime        @updatedAt
+}
+
 model Booking {
   id            String        @id @default(cuid())
   reference     String        @unique

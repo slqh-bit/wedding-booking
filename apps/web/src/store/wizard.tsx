@@ -16,8 +16,12 @@ interface WizardState extends WizardData {
   step: number; // 0-based index into CATEGORY_ORDER; === length means summary
   totalSteps: number;
   isSummary: boolean;
+  /** True once both event type and date are chosen — the hard gate to the wizard. */
+  hasEvent: boolean;
   select: (offering: OfferingDTO) => void;
   clearSelection: (category: ServiceCategory) => void;
+  /** Drop several categories' picks at once (used when the date changes). */
+  clearSelections: (categories: ServiceCategory[]) => void;
   setEventDate: (v: string) => void;
   setEventType: (v: EventType) => void;
   setNotes: (v: string) => void;
@@ -84,6 +88,17 @@ export function WizardProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const clearSelections = useCallback((categories: ServiceCategory[]) => {
+    if (categories.length === 0) return;
+    setData((prev) => {
+      const selections = { ...prev.selections };
+      for (const c of categories) delete selections[c];
+      const nextData = { ...prev, selections };
+      persist(nextData);
+      return nextData;
+    });
+  }, []);
+
   const totalSteps = CATEGORY_ORDER.length;
   const goto = useCallback((s: number) => setStep(Math.max(0, Math.min(s, totalSteps))), [totalSteps]);
   const next = useCallback(() => setStep((s) => Math.min(s + 1, totalSteps)), [totalSteps]);
@@ -110,8 +125,10 @@ export function WizardProvider({ children }: { children: ReactNode }) {
       step,
       totalSteps,
       isSummary: step >= totalSteps,
+      hasEvent: Boolean(data.eventDate) && Boolean(data.eventType),
       select,
       clearSelection,
+      clearSelections,
       setEventDate: (v) => update({ eventDate: v }),
       setEventType: (v) => update({ eventType: v }),
       setNotes: (v) => update({ notes: v }),
@@ -121,7 +138,20 @@ export function WizardProvider({ children }: { children: ReactNode }) {
       reset,
       selectedOfferingIds,
     }),
-    [data, step, totalSteps, select, clearSelection, update, goto, next, prev, reset, selectedOfferingIds],
+    [
+      data,
+      step,
+      totalSteps,
+      select,
+      clearSelection,
+      clearSelections,
+      update,
+      goto,
+      next,
+      prev,
+      reset,
+      selectedOfferingIds,
+    ],
   );
 
   return <WizardContext.Provider value={value}>{children}</WizardContext.Provider>;

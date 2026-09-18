@@ -144,6 +144,17 @@ export const adminVendorCreateSchema = z.object({
 });
 export type AdminVendorCreateInput = z.infer<typeof adminVendorCreateSchema>;
 
+// ── Category settings (date-limiting) ───────────────────
+export const categoryLimitSchema = z.object({ dateLimited: z.boolean() });
+export type CategoryLimitInput = z.infer<typeof categoryLimitSchema>;
+
+/** Availability re-check when the event date changes. */
+export const checkAvailabilitySchema = z.object({
+  date: eventDateSchema,
+  offeringIds: z.array(z.string().cuid()).max(50),
+});
+export type CheckAvailabilityInput = z.infer<typeof checkAvailabilitySchema>;
+
 // ── Promo packages (Phase 3 slice 5) ────────────────────
 export const packageInputSchema = z.object({
   name: localizedStringSchema,

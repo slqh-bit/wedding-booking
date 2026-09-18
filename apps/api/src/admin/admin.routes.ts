@@ -2,6 +2,8 @@ import { Router } from 'express';
 import { z } from 'zod';
 import {
   adminVendorCreateSchema,
+  categoryLimitSchema,
+  categorySchema,
   moderationStatusSchema,
   offeringInputSchema,
   offeringUpdateSchema,
@@ -10,6 +12,7 @@ import {
   recordPaymentSchema,
   reviewStatusSchema,
   vendorStatusSchema,
+  type ServiceCategory,
 } from '@hafalati/shared';
 import { asyncHandler } from '../http/errors.js';
 import { param } from '../http/params.js';
@@ -76,6 +79,23 @@ adminRouter.patch(
   validateBody(z.object({ status: reviewStatusSchema })),
   asyncHandler(async (req, res) => {
     res.json(await admin.setReviewStatus(param(req, 'id'), req.body.status));
+  }),
+);
+
+// ── Category settings (date-limiting) ───────────────────
+adminRouter.get(
+  '/categories',
+  asyncHandler(async (_req, res) => {
+    res.json({ data: await admin.listCategoryConfig() });
+  }),
+);
+
+adminRouter.patch(
+  '/categories/:category',
+  validateBody(categoryLimitSchema),
+  asyncHandler(async (req, res) => {
+    const category = categorySchema.parse(param(req, 'category')) as ServiceCategory;
+    res.json(await admin.setCategoryLimited(category, req.body.dateLimited));
   }),
 );
 

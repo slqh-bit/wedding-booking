@@ -24,18 +24,8 @@ export function Summary() {
   const navigate = useNavigate();
   const toast = useToast();
   const { user } = useAuth();
-  const {
-    selections,
-    selectedOfferingIds,
-    eventDate,
-    eventType,
-    notes,
-    setEventDate,
-    setEventType,
-    setNotes,
-    prev,
-    reset,
-  } = useWizard();
+  const { selections, selectedOfferingIds, eventDate, eventType, notes, setNotes, prev, reset } =
+    useWizard();
 
   const [submitting, setSubmitting] = useState(false);
 
@@ -55,7 +45,16 @@ export function Summary() {
   );
 
   const canSubmit = chosen.length > 0 && Boolean(eventDate) && Boolean(eventType);
-  const today = new Date().toISOString().slice(0, 10);
+  const eventDateLabel = (() => {
+    if (!eventDate) return '—';
+    try {
+      return new Intl.DateTimeFormat(locale, { dateStyle: 'full' }).format(
+        new Date(`${eventDate}T00:00:00`),
+      );
+    } catch {
+      return eventDate;
+    }
+  })();
 
   async function handleConfirm() {
     if (!user) {
@@ -148,37 +147,22 @@ export function Summary() {
           </div>
         </div>
 
-        {/* Event details */}
+        {/* Event details — type + date are set in the gate (read-only here); edit them from the bar above. */}
         <div className="surface mt-4 grid grid-cols-1 gap-4 p-5 sm:grid-cols-2">
-          <label className="block">
-            <span className="mb-1 block text-sm font-medium text-blush-700">
+          <div className="rounded-xl bg-ivory-100 px-3 py-2.5">
+            <span className="mb-0.5 block text-[11px] font-medium text-blush-400">
               {t('summary.eventDate')}
             </span>
-            <input
-              type="date"
-              min={today}
-              value={eventDate}
-              onChange={(e) => setEventDate(e.target.value)}
-              className="w-full rounded-xl border border-gold-200 bg-white px-3 py-2 text-sm outline-none focus:border-gold-400 focus:ring-2 focus:ring-gold-200"
-            />
-          </label>
-          <label className="block">
-            <span className="mb-1 block text-sm font-medium text-blush-700">
+            <span className="text-sm font-semibold text-blush-900">{eventDateLabel}</span>
+          </div>
+          <div className="rounded-xl bg-ivory-100 px-3 py-2.5">
+            <span className="mb-0.5 block text-[11px] font-medium text-blush-400">
               {t('summary.eventType')}
             </span>
-            <select
-              value={eventType}
-              onChange={(e) => setEventType(e.target.value as EventType)}
-              className="w-full rounded-xl border border-gold-200 bg-white px-3 py-2 text-sm outline-none focus:border-gold-400 focus:ring-2 focus:ring-gold-200"
-            >
-              <option value="">—</option>
-              {Object.values(EventType).map((et) => (
-                <option key={et} value={et}>
-                  {t(`eventTypes.${et}`)}
-                </option>
-              ))}
-            </select>
-          </label>
+            <span className="text-sm font-semibold text-blush-900">
+              {eventType ? t(`eventTypes.${eventType}`) : '—'}
+            </span>
+          </div>
           <label className="block sm:col-span-2">
             <span className="mb-1 block text-sm font-medium text-blush-700">{t('summary.notes')}</span>
             <textarea
@@ -198,8 +182,8 @@ export function Summary() {
             {user ? t('summary.confirm') : t('summary.loginToBook')} ✦
           </GoldButton>
         </div>
-        {!canSubmit && chosen.length > 0 && (
-          <p className="mt-2 text-center text-xs text-blush-400">{t('summary.pickDate')}</p>
+        {chosen.length === 0 && (
+          <p className="mt-2 text-center text-xs text-blush-400">{t('summary.empty')}</p>
         )}
       </div>
     </div>

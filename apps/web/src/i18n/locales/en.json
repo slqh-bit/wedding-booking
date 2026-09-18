@@ -1,5 +1,8 @@
 {
-  "brand": { "name": "Hafalati", "tagline": "Events & celebrations planning" },
+  "brand": {
+    "name": "Hafalati",
+    "tagline": "Events & celebrations planning"
+  },
   "nav": {
     "home": "Home",
     "services": "Services",
@@ -92,7 +95,9 @@
     "of": "of",
     "startingPrice": "From",
     "selected": "Selected",
-    "tapToUnselect": "Tap again to unselect"
+    "tapToUnselect": "Tap again to unselect",
+    "noneAvailable": "Nothing available on this date",
+    "noneAvailableHint": "Change the event date above, or skip this category"
   },
   "summary": {
     "title": "Your selections",
@@ -170,8 +175,15 @@
     "comingSoon": "Coming soon",
     "notifications": "Notifications",
     "notifEmpty": "No notifications yet.",
-    "notifType": { "BOOKING_RECEIVED": "Booking received", "PAYMENT_CONFIRMED": "Payment confirmed" },
-    "notifStatus": { "SENT": "Sent", "PENDING": "Pending", "FAILED": "Failed" }
+    "notifType": {
+      "BOOKING_RECEIVED": "Booking received",
+      "PAYMENT_CONFIRMED": "Payment confirmed"
+    },
+    "notifStatus": {
+      "SENT": "Sent",
+      "PENDING": "Pending",
+      "FAILED": "Failed"
+    }
   },
   "vendor": {
     "become": "Become a vendor",
@@ -184,7 +196,12 @@
     "navLink": "Vendor space",
     "pendingBanner": "Your account is under review. Your services stay hidden from customers until approved.",
     "suspendedBanner": "Your account is suspended. Please contact the admin.",
-    "tabs": { "offerings": "My services", "bookings": "Bookings", "stats": "Stats", "profile": "Profile" },
+    "tabs": {
+      "offerings": "My services",
+      "bookings": "Bookings",
+      "stats": "Stats",
+      "profile": "Profile"
+    },
     "addOffering": "Add a service",
     "editOffering": "Edit service",
     "noOfferings": "No services yet.",
@@ -294,5 +311,25 @@
     "retry": "Retry",
     "currency": "TND",
     "comingSoon": "Coming soon"
+  },
+  "gate": {
+    "title": "Let's start with your event",
+    "subtitle": "Pick the event type and date so we can show what's free that day",
+    "typeLabel": "What kind of event?",
+    "dateLabel": "When will it take place?",
+    "dateHint": "We'll only show services available on this day",
+    "start": "Start planning",
+    "pickBoth": "Pick both a type and a date to continue",
+    "edit": "Edit",
+    "done": "Done",
+    "checking": "Checking…",
+    "autoRemoved": "Removed picks not available on the new date: {{items}}"
+  },
+  "adminCategories": {
+    "tab": "Categories",
+    "intro": "Choose which categories are date-limited (hall, photographer…) — bookable once per day, so options already taken are hidden. Unlimited categories (flowers…) always show.",
+    "saved": "Saved",
+    "limited": "Date-limited — one per day",
+    "unlimited": "Unlimited — always available"
   }
 }

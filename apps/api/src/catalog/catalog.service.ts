@@ -12,6 +12,7 @@ import { prisma } from '../db.js';
 import { AppError } from '../http/errors.js';
 import { toOfferingDTO } from '../http/serialize.js';
 import { offeringRatings } from '../reviews/reviews.service.js';
+import { dateLimitedSet } from './category-config.service.js';
 
 /**
  * The single visibility rule for the public catalog: an offering shows only
@@ -45,14 +46,52 @@ export async function listCategories(): Promise<CategoryDTO[]> {
   });
 }
 
-export async function listOfferings(category?: ServiceCategory) {
+export async function listOfferings(category?: ServiceCategory, date?: string) {
+  // For a date-limited category with a chosen date, hide offerings already
+  // reserved (BOOKED/HELD) on that whole day.
+  let dateFilter: Prisma.ServiceOfferingWhereInput = {};
+  if (category && date) {
+    const limited = await dateLimitedSet();
+    if (limited.has(category)) {
+      dateFilter = {
+        NOT: {
+          availability: {
+            some: { date: new Date(`${date}T00:00:00.000Z`), status: { in: ['BOOKED', 'HELD'] } },
+          },
+        },
+      };
+    }
+  }
+
   const offerings = await prisma.serviceOffering.findMany({
-    where: { ...PUBLIC_OFFERING_WHERE, ...(category ? { category } : {}) },
+    where: { ...PUBLIC_OFFERING_WHERE, ...(category ? { category } : {}), ...dateFilter },
     include: { vendor: { select: { name: true } } },
     orderBy: { basePrice: 'asc' },
   });
   const ratings = await offeringRatings(offerings.map((o) => o.id));
   return offerings.map((o) => toOfferingDTO(o, ratings.get(o.id)));
+}
+
+/**
+ * Given a date + candidate offering ids, return the ids that are no longer
+ * bookable on that date (reserved on a date-limited category). Used to prune a
+ * customer's selections when they change the event date.
+ */
+export async function unavailableForDate(date: string, offeringIds: string[]): Promise<string[]> {
+  if (offeringIds.length === 0) return [];
+  const day = new Date(`${date}T00:00:00.000Z`);
+  const limited = await dateLimitedSet();
+  const offerings = await prisma.serviceOffering.findMany({
+    where: { id: { in: offeringIds } },
+    select: { id: true, category: true },
+  });
+  const limitedIds = offerings.filter((o) => limited.has(o.category as ServiceCategory)).map((o) => o.id);
+  if (limitedIds.length === 0) return [];
+  const taken = await prisma.availability.findMany({
+    where: { offeringId: { in: limitedIds }, date: day, status: { in: ['BOOKED', 'HELD'] } },
+    select: { offeringId: true },
+  });
+  return [...new Set(taken.map((t) => t.offeringId))];
 }
 
 export async function getOffering(id: string) {

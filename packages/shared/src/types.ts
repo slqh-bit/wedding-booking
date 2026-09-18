@@ -182,6 +182,14 @@ export interface VendorEarningsResponse {
   totals: { gross: number; commission: number; net: number; pendingNet: number; paidNet: number };
 }
 
+export interface CategoryConfigDTO {
+  category: ServiceCategory;
+  /** When true, the wizard hides offerings already reserved for the chosen date. */
+  dateLimited: boolean;
+  emoji: string;
+  label: LocalizedString;
+}
+
 export interface AnalyticsDTO {
   kpis: {
     confirmedRevenue: number;

@@ -13,12 +13,14 @@ import { AdminPayouts } from './AdminPayouts';
 import { AdminReviews } from './AdminReviews';
 import { AdminPackages } from './AdminPackages';
 import { AdminAnalytics } from './AdminAnalytics';
+import { AdminCategories } from './AdminCategories';
 
 type Tab =
   | 'dashboard'
   | 'analytics'
   | 'bookings'
   | 'offerings'
+  | 'categories'
   | 'vendors'
   | 'moderation'
   | 'payouts'
@@ -36,6 +38,7 @@ export function AdminDashboard() {
     { id: 'analytics', label: t('analytics.title') },
     { id: 'bookings', label: t('admin.bookings') },
     { id: 'offerings', label: t('admin.offerings') },
+    { id: 'categories', label: t('adminCategories.tab') },
     { id: 'vendors', label: t('adminMarket.vendors') },
     { id: 'moderation', label: t('adminMarket.moderation') },
     { id: 'payouts', label: t('adminMarket.payouts') },
@@ -68,6 +71,7 @@ export function AdminDashboard() {
       {tab === 'analytics' && <AdminAnalytics />}
       {tab === 'bookings' && <AdminBookings />}
       {tab === 'offerings' && <AdminOfferings />}
+      {tab === 'categories' && <AdminCategories />}
       {tab === 'vendors' && <AdminVendors />}
       {tab === 'moderation' && <AdminModeration />}
       {tab === 'payouts' && <AdminPayouts />}

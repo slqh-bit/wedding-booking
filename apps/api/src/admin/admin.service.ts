@@ -17,6 +17,7 @@ import { earningsForVendorId, payoutSummaries, settleVendorPayout } from '../ven
 
 export { listNotifications } from '../notifications/notification.service.js';
 export { listReviews, setReviewStatus } from '../reviews/reviews.service.js';
+export { listCategoryConfig, setCategoryLimited } from '../catalog/category-config.service.js';
 export {
   listAllPackages,
   createPackage,

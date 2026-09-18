@@ -1,5 +1,8 @@
 {
-  "brand": { "name": "Hafalati", "tagline": "Organisation de fêtes & événements" },
+  "brand": {
+    "name": "Hafalati",
+    "tagline": "Organisation de fêtes & événements"
+  },
   "nav": {
     "home": "Accueil",
     "services": "Services",
@@ -92,7 +95,9 @@
     "of": "sur",
     "startingPrice": "À partir de",
     "selected": "Sélectionné",
-    "tapToUnselect": "Retapez pour désélectionner"
+    "tapToUnselect": "Retapez pour désélectionner",
+    "noneAvailable": "Rien de disponible à cette date",
+    "noneAvailableHint": "Changez la date de l'événement ci-dessus ou passez cette catégorie"
   },
   "summary": {
     "title": "Récapitulatif de vos choix",
@@ -170,8 +175,15 @@
     "comingSoon": "Bientôt",
     "notifications": "Notifications",
     "notifEmpty": "Aucune notification pour l’instant.",
-    "notifType": { "BOOKING_RECEIVED": "Réservation reçue", "PAYMENT_CONFIRMED": "Paiement confirmé" },
-    "notifStatus": { "SENT": "Envoyée", "PENDING": "En attente", "FAILED": "Échec" }
+    "notifType": {
+      "BOOKING_RECEIVED": "Réservation reçue",
+      "PAYMENT_CONFIRMED": "Paiement confirmé"
+    },
+    "notifStatus": {
+      "SENT": "Envoyée",
+      "PENDING": "En attente",
+      "FAILED": "Échec"
+    }
   },
   "vendor": {
     "become": "Devenir prestataire",
@@ -184,7 +196,12 @@
     "navLink": "Espace vendeur",
     "pendingBanner": "Votre compte est en cours de validation. Vos services ne seront visibles qu’après approbation.",
     "suspendedBanner": "Votre compte est suspendu. Contactez l’administration.",
-    "tabs": { "offerings": "Mes services", "bookings": "Réservations", "stats": "Statistiques", "profile": "Profil" },
+    "tabs": {
+      "offerings": "Mes services",
+      "bookings": "Réservations",
+      "stats": "Statistiques",
+      "profile": "Profil"
+    },
     "addOffering": "Ajouter un service",
     "editOffering": "Modifier le service",
     "noOfferings": "Aucun service pour l’instant.",
@@ -294,5 +311,25 @@
     "retry": "Réessayer",
     "currency": "DT",
     "comingSoon": "Bientôt"
+  },
+  "gate": {
+    "title": "Commençons par votre événement",
+    "subtitle": "Choisissez le type d'événement et sa date pour voir ce qui est disponible ce jour-là",
+    "typeLabel": "Quel type d'événement ?",
+    "dateLabel": "Quand aura-t-il lieu ?",
+    "dateHint": "Nous n'afficherons que les services disponibles ce jour-là",
+    "start": "Commencer la planification",
+    "pickBoth": "Choisissez le type et la date pour continuer",
+    "edit": "Modifier",
+    "done": "Terminé",
+    "checking": "Vérification…",
+    "autoRemoved": "Certains choix indisponibles à la nouvelle date ont été retirés : {{items}}"
+  },
+  "adminCategories": {
+    "tab": "Catégories",
+    "intro": "Choisissez les catégories limitées par date (salle, photographe…) — réservables une seule fois par jour, les options déjà prises sont masquées. Les catégories non limitées (fleurs…) restent toujours visibles.",
+    "saved": "Enregistré",
+    "limited": "Limitée par date — une par jour",
+    "unlimited": "Non limitée — toujours disponible"
   }
 }

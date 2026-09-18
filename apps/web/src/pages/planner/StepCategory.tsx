@@ -20,11 +20,14 @@ export function StepCategory({ category }: { category: ServiceCategory }) {
   const { t, i18n } = useTranslation();
   const locale = i18n.language as Locale;
   const meta = CATEGORY_META[category];
-  const { selections, select, clearSelection, next, goto, totalSteps, prev, step } = useWizard();
+  const { selections, select, clearSelection, next, goto, totalSteps, prev, step, eventDate } =
+    useWizard();
 
+  // Date is part of the key: a date-limited category shows only what's free on
+  // the chosen day, so its list must refetch when the event date changes.
   const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ['offerings', category],
-    queryFn: () => endpoints.offerings(category),
+    queryKey: ['offerings', category, eventDate],
+    queryFn: () => endpoints.offerings(category, eventDate),
   });
 
   const selectedId = selections[category]?.id;
@@ -70,7 +73,15 @@ export function StepCategory({ category }: { category: ServiceCategory }) {
         </div>
       )}
 
-      {data && (
+      {data && data.length === 0 && (
+        <div className="surface p-8 text-center">
+          <span className="text-4xl">🗓️</span>
+          <p className="mt-2 font-semibold text-blush-900">{t('wizard.noneAvailable')}</p>
+          <p className="mt-1 text-sm text-blush-500">{t('wizard.noneAvailableHint')}</p>
+        </div>
+      )}
+
+      {data && data.length > 0 && (
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {data.map((o) => (
             <OfferingCard
